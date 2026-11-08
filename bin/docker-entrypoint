@@ -16,11 +16,14 @@ fi
 
 # If running the rails server then create or migrate existing database
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+  echo "[entrypoint] Connecting to database and running db:prepare..."
   ./bin/rails db:prepare
+  echo "[entrypoint] Database ready."
   # Idempotent sample data (admin, companies, vendors, leads, legal pages). Set SEED_ON_DEPLOY=true.
   if [ "${SEED_ON_DEPLOY}" == "true" ]; then
     ./bin/rails db:seed
   fi
 fi
 
+echo "[entrypoint] Starting: ${*}"
 exec "${@}"
