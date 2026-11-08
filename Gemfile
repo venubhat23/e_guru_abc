@@ -58,7 +58,7 @@ end
 
 # --- eGiftGuru ---
 gem "redcarpet"
-gem "json", "< 3"
+gem "json", "< 4"
 gem "pundit"
 gem "aasm"
 gem "after_commit_everywhere"
