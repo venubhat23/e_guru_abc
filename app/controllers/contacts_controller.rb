@@ -2,7 +2,9 @@ class ContactsController < PublicController
   HONEYPOT = :website
 
   def new
-    @lead = Lead.new(occasion: Occasion.active.find_by(slug: params[:occasion]))
+    @lead = Lead.new(occasion: Occasion.active.find_by(slug: params[:occasion]),
+                     employee_count: params[:employees].to_i.positive? ? params[:employees].to_i : nil,
+                     message: params[:message].to_s.first(1000).presence)
     @occasions = Occasion.active.ordered
   end
 

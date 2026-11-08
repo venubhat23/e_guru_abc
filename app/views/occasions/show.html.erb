@@ -1,5 +1,5 @@
 <% page_title "#{@occasion.name} corporate gifts" %>
-<% meta_description "#{@occasion.name} gifts for employees from #{inr(@occasion.from_price_paise)} per employee. #{@occasion.tagline}" %>
+<% meta_description "#{@occasion.name} gifts for employees — curated, branded and delivered across India. Get a custom quote. #{@occasion.tagline}" %>
 <% themes = { "saffron" => "from-saffron-400 via-saffron-500 to-rani-500", "rani" => "from-rani-400 via-rani-500 to-plum-600", "plum" => "from-plum-500 via-plum-700 to-plum-900", "emerald" => "from-emerald-400 via-teal-500 to-sky-600", "sky" => "from-sky-400 via-indigo-500 to-plum-600" } %>
 <section class="relative overflow-hidden bg-gradient-to-br <%= themes[@occasion.theme] %> pt-32 pb-20 text-white sm:pt-40">
   <div class="absolute inset-0 opacity-20 [background-image:radial-gradient(white_1px,transparent_1px)] [background-size:22px_22px]"></div>
@@ -8,11 +8,12 @@
       <%= link_to root_path(anchor: "occasions"), class: "inline-flex items-center gap-1 text-sm font-semibold text-white/80 hover:text-white" do %><%= icon("chevron-left", class: "h-4 w-4") %> All occasions<% end %>
       <h1 class="mt-4 font-display text-5xl font-semibold sm:text-6xl"><%= @occasion.name %> gifting</h1>
       <p class="mt-4 text-xl text-white/90"><%= @occasion.tagline %></p>
-      <p class="mt-6 inline-flex items-baseline gap-2 rounded-2xl bg-white/15 px-5 py-3 backdrop-blur">
-        <span class="text-sm text-white/80">from</span><span class="font-display text-3xl font-semibold"><%= inr(@occasion.from_price_paise) %></span><span class="text-sm text-white/80">per employee</span>
+      <p class="mt-6 inline-flex items-center gap-3 rounded-2xl bg-white/15 px-5 py-3 backdrop-blur">
+        <%= icon("sparkles", class: "h-6 w-6 text-marigold-300") %>
+        <span><span class="block font-semibold">Pricing tailored to your team</span><span class="block text-sm text-white/80">Share headcount &amp; budget — quote within one business day</span></span>
       </p>
       <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-        <%= link_to "Get a quote for #{@occasion.name}", new_contact_path(occasion: @occasion.slug), class: "btn btn-lg bg-white text-plum-900 shadow-xl hover:-translate-y-0.5" %>
+        <%= link_to "Get a quote for #{@occasion.name}", new_contact_path(occasion: @occasion.slug), class: "btn btn-lg bg-white text-plum-900 shadow-xl hover:-translate-y-0.5", data: { track: "Get a quote: #{@occasion.name}" } %>
       </div>
     </div>
     <div class="relative mx-auto grid h-80 w-80 place-items-center sm:h-96 sm:w-96" aria-hidden="true">

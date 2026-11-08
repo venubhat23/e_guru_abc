@@ -1,82 +1,120 @@
 <% page_title "Corporate gifting, managed end-to-end" %>
 
 <%# ---------------- HERO ---------------- %>
-<section class="relative overflow-hidden pt-28 pb-20 sm:pt-36 lg:pb-28">
-  <div class="absolute inset-0 pattern-dots opacity-60"></div>
-  <div class="absolute -top-32 right-[-10%] h-[36rem] w-[36rem] rounded-full bg-gradient-to-br from-marigold-300/50 via-saffron-300/40 to-rani-300/40 blur-3xl"></div>
-  <div class="absolute -left-40 top-40 h-96 w-96 rounded-full bg-plum-200/50 blur-3xl"></div>
+<section class="relative isolate overflow-hidden pt-28 pb-20 sm:pt-36 lg:pb-32">
+  <%# Aurora background %>
+  <div class="absolute inset-0 -z-10 pattern-dots opacity-50 [mask-image:radial-gradient(ellipse_at_top,black_30%,transparent_75%)]"></div>
+  <div class="absolute -top-40 right-[-15%] -z-10 h-[40rem] w-[40rem] rounded-full bg-gradient-to-br from-marigold-300/60 via-saffron-300/50 to-rani-300/50 blur-3xl animate-aurora"></div>
+  <div class="absolute -left-48 top-32 -z-10 h-[30rem] w-[30rem] rounded-full bg-gradient-to-tr from-plum-300/50 to-rani-200/50 blur-3xl animate-aurora" style="animation-delay:-6s"></div>
+  <div class="absolute bottom-0 left-1/3 -z-10 h-72 w-72 rounded-full bg-marigold-200/60 blur-3xl animate-aurora" style="animation-delay:-12s"></div>
+  <%# Twinkling sparkles %>
+  <% [["top-[18%] left-[8%]", "0s", "text-saffron-400"], ["top-[30%] left-[46%]", "-1s", "text-rani-400"], ["top-[70%] left-[4%]", "-2s", "text-marigold-500"], ["top-[12%] right-[10%]", "-.5s", "text-plum-400"], ["bottom-[14%] right-[44%]", "-1.6s", "text-saffron-500"]].each do |pos, delay, color| %>
+    <svg class="pointer-events-none absolute <%= pos %> <%= color %> h-4 w-4 animate-twinkle" style="animation-delay:<%= delay %>" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0c.6 6.5 5.5 11.4 12 12-6.5.6-11.4 5.5-12 12-.6-6.5-5.5-11.4-12-12C6.5 11.4 11.4 6.5 12 0Z"/></svg>
+  <% end %>
 
   <div class="relative mx-auto grid max-w-7xl items-center gap-14 px-6 lg:grid-cols-2">
     <div class="animate-fade-up">
-      <span class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-plum-800 shadow-sm ring-1 ring-plum-100">
-        <span class="flex h-5 items-center rounded-full bg-gradient-to-r from-saffron-500 to-rani-500 px-2 text-[10px] font-bold uppercase text-white">New</span>
+      <span class="inline-flex items-center gap-2 rounded-full bg-white/80 py-1.5 pl-1.5 pr-4 text-xs font-semibold text-plum-800 shadow-sm ring-1 ring-plum-100 backdrop-blur">
+        <span class="flex h-6 items-center gap-1 rounded-full bg-gradient-to-r from-saffron-500 to-rani-500 px-2.5 text-[10px] font-bold uppercase tracking-wide text-white"><span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>Live</span>
         Diwali 2026 hampers now booking
+        <%= icon("arrow-right", class: "h-3.5 w-3.5 text-saffron-600", stroke: 2.2) %>
       </span>
-      <h1 class="mt-6 font-display text-5xl font-semibold leading-[1.05] tracking-tight text-plum-950 sm:text-6xl xl:text-7xl">
-        Gifts your people <span class="relative sm:whitespace-nowrap"><span class="text-gradient animate-shimmer">actually love</span><svg class="absolute -bottom-2 left-0 w-full text-marigold-400" viewBox="0 0 300 12" fill="none" preserveAspectRatio="none"><path d="M2 9C60 3 140 2 298 7" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg></span>,
-        delivered to every door.
+      <h1 class="mt-7 font-display text-5xl font-semibold leading-[1.04] tracking-tight text-plum-950 sm:text-6xl xl:text-[5.25rem]">
+        Gifts your people <span class="relative sm:whitespace-nowrap"><span class="text-gradient animate-shimmer">actually love</span><svg class="absolute -bottom-2 left-0 w-full text-marigold-400" viewBox="0 0 300 12" fill="none" preserveAspectRatio="none" aria-hidden="true"><path d="M2 9C60 3 140 2 298 7" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg></span>
       </h1>
-      <p class="mt-7 max-w-xl text-lg leading-relaxed text-slate-600">
+      <p class="mt-5 font-display text-2xl text-plum-800 sm:text-3xl" data-controller="rotator" data-rotator-words-value='<%= ["for Diwali.", "for birthdays.", "for onboarding.", "for work anniversaries.", "for Women\u2019s Day.", "for every milestone."].to_json %>'>
+        <span class="inline-block [perspective:600px]"><span class="inline-block italic text-saffron-600" data-rotator-target="word">for Diwali.</span></span>
+      </p>
+      <p class="mt-6 max-w-xl text-lg leading-relaxed text-slate-600">
         Avighna eGiftMitra is a managed corporate-gifting marketplace for India. Pick a curated package or build your own box,
         upload your employees — we handle vendors, branding, pan-India delivery and GST invoices.
       </p>
       <div class="mt-9 flex flex-col gap-3 sm:flex-row">
-        <%= link_to new_contact_path, class: "btn btn-primary btn-lg" do %><%= icon("calendar", class: "h-5 w-5") %> Book a demo<% end %>
+        <%= link_to new_contact_path, class: "btn btn-primary btn-lg group animate-pulse-ring", data: { track: "Hero: Book a demo" } do %><%= icon("calendar", class: "h-5 w-5") %> Book a demo <%= icon("arrow-right", class: "h-4 w-4 transition group-hover:translate-x-1", stroke: 2.2) %><% end %>
         <%= link_to vendor_signup_path, class: "btn btn-secondary btn-lg" do %><%= icon("briefcase", class: "h-5 w-5") %> Become a vendor<% end %>
       </div>
-      <dl class="mt-12 grid max-w-lg grid-cols-3 gap-4 sm:gap-6" data-controller="counter">
+      <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium text-slate-600">
+        <% ["No minimum order", "Free branding mock-ups", "Single GST invoice"].each do |t| %>
+          <span class="flex items-center gap-1.5"><span class="grid h-5 w-5 place-items-center rounded-full bg-emerald-100 text-emerald-600"><%= icon("check", class: "h-3 w-3", stroke: 3) %></span><%= t %></span>
+        <% end %>
+      </div>
+      <dl class="mt-10 grid max-w-lg grid-cols-3 divide-x divide-plum-100 rounded-2xl bg-white/70 py-4 shadow-sm ring-1 ring-plum-100 backdrop-blur" data-controller="counter">
         <% [["19000", "+", "pincodes served"], ["48", "h", "vendor confirmation SLA"], ["100", "%", "GST-compliant billing"]].each do |n, suffix, label| %>
-          <div>
+          <div class="px-4 text-center sm:px-5">
             <dt class="sr-only"><%= label %></dt>
-            <dd class="font-display text-2xl font-semibold text-plum-900 sm:text-3xl"><span data-counter-target="number" data-value="<%= n %>"><%= Inr.group(n.to_i) %></span><%= suffix %></dd>
-            <dd class="mt-1 text-xs font-medium text-slate-500"><%= label %></dd>
+            <dd class="font-display text-2xl font-semibold text-plum-900 sm:text-3xl"><span data-counter-target="number" data-value="<%= n %>"><%= Inr.group(n.to_i) %></span><span class="text-saffron-500"><%= suffix %></span></dd>
+            <dd class="mt-1 text-[11px] font-medium leading-tight text-slate-500 sm:text-xs"><%= label %></dd>
           </div>
         <% end %>
       </dl>
     </div>
 
-    <%# Illustrated hero composition %>
-    <div class="relative mx-auto h-[26rem] w-full max-w-lg sm:h-[34rem]" aria-hidden="true">
-      <div class="absolute inset-6 rounded-[3rem] bg-gradient-to-br from-plum-900 via-plum-800 to-rani-700 shadow-2xl shadow-plum-900/30 rotate-3"></div>
-      <div class="absolute inset-6 overflow-hidden rounded-[3rem] pattern-grid-dark"></div>
-      <svg viewBox="0 0 320 320" class="absolute left-1/2 top-1/2 w-72 -translate-x-1/2 -translate-y-1/2 drop-shadow-2xl animate-float sm:w-80">
-        <defs>
-          <linearGradient id="box" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#ff8a3d"/><stop offset="1" stop-color="#e33d82"/></linearGradient>
-          <linearGradient id="lid" x1="0" x2="1"><stop offset="0" stop-color="#ffad70"/><stop offset="1" stop-color="#f06aa4"/></linearGradient>
-          <linearGradient id="ribbon" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ffd75e"/><stop offset="1" stop-color="#f5ab00"/></linearGradient>
-        </defs>
-        <rect x="58" y="140" width="204" height="150" rx="18" fill="url(#box)"/>
-        <rect x="58" y="140" width="204" height="150" rx="18" fill="#000" opacity=".06"/>
-        <rect x="44" y="108" width="232" height="46" rx="14" fill="url(#lid)"/>
-        <rect x="145" y="108" width="30" height="182" fill="url(#ribbon)"/>
-        <path d="M160 108c-30-46-82-38-70-6 8 22 46 10 70 6Z" fill="url(#ribbon)"/>
-        <path d="M160 108c30-46 82-38 70-6-8 22-46 10-70 6Z" fill="url(#ribbon)"/>
-        <circle cx="160" cy="106" r="13" fill="#f5ab00"/>
-        <rect x="80" y="180" width="44" height="6" rx="3" fill="#fff" opacity=".35"/>
-        <rect x="80" y="194" width="28" height="6" rx="3" fill="#fff" opacity=".25"/>
-      </svg>
-      <div class="absolute left-0 top-6 w-48 sm:top-10 sm:w-52 rounded-2xl bg-white p-4 shadow-2xl ring-1 ring-slate-100 animate-float-slow">
-        <div class="flex items-center gap-3">
-          <span class="grid h-10 w-10 place-items-center rounded-xl bg-emerald-50 text-emerald-600"><%= icon("check-circle", class: "h-6 w-6") %></span>
-          <div><p class="text-sm font-semibold text-slate-900">1,240 delivered</p><p class="text-xs text-slate-500">Diwali · 18 cities</p></div>
+    <%# Illustrated hero composition with 3D tilt %>
+    <div class="relative mx-auto h-[28rem] w-full max-w-lg sm:h-[36rem]" aria-hidden="true" data-controller="tilt" data-action="mousemove->tilt#move mouseleave->tilt#leave">
+      <div class="tilt absolute inset-0" data-tilt-target="card">
+        <div class="absolute inset-6 rotate-3 rounded-[3rem] bg-gradient-to-br from-plum-900 via-plum-800 to-rani-700 shadow-2xl shadow-plum-900/40"></div>
+        <div class="absolute inset-6 rotate-3 overflow-hidden rounded-[3rem]">
+          <div class="absolute inset-0 pattern-grid-dark"></div>
+          <div class="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-saffron-500/40 blur-3xl"></div>
+          <div class="absolute -bottom-20 -left-10 h-64 w-64 rounded-full bg-rani-500/40 blur-3xl"></div>
         </div>
-        <div class="mt-3 h-2 overflow-hidden rounded-full bg-slate-100"><div class="h-full w-[92%] rounded-full bg-gradient-to-r from-emerald-400 to-teal-500"></div></div>
-      </div>
-      <div class="absolute right-0 top-1/3 w-44 sm:-right-2 sm:w-48 rounded-2xl bg-white p-4 shadow-2xl ring-1 ring-slate-100 animate-float" style="animation-delay:-2s">
-        <p class="text-xs font-medium text-slate-500">Price per kit</p>
-        <p class="mt-1 font-display text-2xl font-semibold text-plum-900">₹1,490</p>
-        <p class="mt-1 text-[11px] text-emerald-600 font-semibold">incl. branding + delivery</p>
-      </div>
-      <div class="absolute bottom-6 left-6 flex items-center gap-3 rounded-2xl bg-white/95 px-4 py-3 shadow-2xl ring-1 ring-slate-100 animate-float-slow" style="animation-delay:-4s">
-        <div class="flex -space-x-2">
-          <% %w[bg-saffron-400 bg-rani-400 bg-plum-400 bg-marigold-400].each_with_index do |c, i| %>
-            <span class="grid h-8 w-8 place-items-center rounded-full <%= c %> text-[11px] font-bold text-white ring-2 ring-white"><%= %w[AK RS PM NJ][i] %></span>
+        <%# Orbit ring %>
+        <div class="absolute left-1/2 top-1/2 h-[22rem] w-[22rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-white/20 animate-spin-slow sm:h-[26rem] sm:w-[26rem]">
+          <% [["🍫", "top-0 left-1/2"], ["☕", "top-1/2 right-0"], ["🪔", "bottom-0 left-1/2"], ["🎧", "top-1/2 left-0"]].each do |e, pos| %>
+            <span class="absolute <%= pos %> grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-2xl bg-white/90 text-2xl shadow-xl ring-1 ring-white <%= pos.include?("right-0") ? "translate-x-1/2" : "" %>"><%= e %></span>
           <% end %>
         </div>
-        <p class="text-xs font-semibold text-slate-700">"Loved the hamper!" 🎉</p>
+        <svg viewBox="0 0 320 320" class="absolute left-1/2 top-1/2 w-64 -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_30px_40px_rgba(23,9,38,.5)] animate-float sm:w-72" style="transform: translateZ(60px)">
+          <defs>
+            <linearGradient id="box" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#ff8a3d"/><stop offset="1" stop-color="#e33d82"/></linearGradient>
+            <linearGradient id="lid" x1="0" x2="1"><stop offset="0" stop-color="#ffad70"/><stop offset="1" stop-color="#f06aa4"/></linearGradient>
+            <linearGradient id="ribbon" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ffd75e"/><stop offset="1" stop-color="#f5ab00"/></linearGradient>
+            <linearGradient id="shine" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+          </defs>
+          <rect x="58" y="140" width="204" height="150" rx="18" fill="url(#box)"/>
+          <rect x="58" y="140" width="102" height="150" rx="18" fill="#000" opacity=".07"/>
+          <rect x="44" y="108" width="232" height="46" rx="14" fill="url(#lid)"/>
+          <rect x="145" y="108" width="30" height="182" fill="url(#ribbon)"/>
+          <path d="M160 108c-30-46-82-38-70-6 8 22 46 10 70 6Z" fill="url(#ribbon)"/>
+          <path d="M160 108c30-46 82-38 70-6-8 22-46 10-70 6Z" fill="url(#ribbon)"/>
+          <circle cx="160" cy="106" r="13" fill="#f5ab00"/>
+          <rect x="80" y="180" width="44" height="6" rx="3" fill="#fff" opacity=".35"/>
+          <rect x="80" y="194" width="28" height="6" rx="3" fill="#fff" opacity=".25"/>
+          <rect x="44" y="108" width="232" height="182" fill="url(#shine)" opacity=".6"><animate attributeName="x" from="-240" to="320" dur="4s" repeatCount="indefinite"/></rect>
+        </svg>
+        <div class="absolute left-0 top-6 w-52 rounded-2xl bg-white/95 p-4 shadow-2xl ring-1 ring-slate-100 backdrop-blur animate-float-slow sm:top-10 sm:w-56" style="transform: translateZ(90px)">
+          <div class="flex items-center gap-3">
+            <span class="grid h-10 w-10 place-items-center rounded-xl bg-emerald-50 text-emerald-600"><%= icon("check-circle", class: "h-6 w-6") %></span>
+            <div><p class="text-sm font-semibold text-slate-900">1,240 delivered</p><p class="text-xs text-slate-500">Diwali · 18 cities</p></div>
+          </div>
+          <div class="mt-3 h-2 overflow-hidden rounded-full bg-slate-100"><div class="h-full w-[92%] rounded-full bg-gradient-to-r from-emerald-400 to-teal-500"></div></div>
+          <p class="mt-1.5 text-right text-[10px] font-semibold text-emerald-600">92% complete</p>
+        </div>
+        <div class="absolute right-0 top-[38%] w-44 rounded-2xl bg-white/95 p-4 shadow-2xl ring-1 ring-slate-100 backdrop-blur animate-float sm:-right-4 sm:w-48" style="animation-delay:-2s">
+          <p class="flex items-center gap-1.5 text-xs font-medium text-slate-500"><span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>Quote ready</p>
+          <p class="mt-1 font-display text-2xl font-semibold text-plum-900">in 24 hours</p>
+          <p class="mt-1 text-[11px] font-semibold text-emerald-600">branding + delivery included</p>
+        </div>
+        <div class="absolute bottom-6 left-4 flex items-center gap-3 rounded-2xl bg-white/95 px-4 py-3 shadow-2xl ring-1 ring-slate-100 backdrop-blur animate-float-slow" style="animation-delay:-4s">
+          <div class="flex -space-x-2">
+            <% %w[bg-saffron-400 bg-rani-400 bg-plum-400 bg-marigold-400].each_with_index do |c, i| %>
+              <span class="grid h-8 w-8 place-items-center rounded-full <%= c %> text-[11px] font-bold text-white ring-2 ring-white"><%= %w[AK RS PM NJ][i] %></span>
+            <% end %>
+          </div>
+          <div>
+            <p class="text-xs font-semibold text-slate-700">"Loved the hamper!" 🎉</p>
+            <p class="flex text-marigold-500"><% 5.times do %><%= icon("star", class: "h-3 w-3 fill-current") %><% end %></p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+
+  <%# Scroll cue %>
+  <a href="#occasions" class="absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-1 text-[11px] font-semibold uppercase tracking-widest text-plum-400 transition hover:text-plum-700 lg:flex">
+    Explore
+    <span class="flex h-9 w-5 justify-center rounded-full border-2 border-current pt-1.5"><span class="h-2 w-1 rounded-full bg-current animate-bounce"></span></span>
+  </a>
 </section>
 
 <%# ---------------- CATEGORY MARQUEE ---------------- %>
@@ -97,7 +135,7 @@
     <div class="mx-auto max-w-2xl text-center" data-reveal-target="item">
       <p class="text-sm font-semibold uppercase tracking-widest text-saffron-600">Curated for every moment</p>
       <h2 class="mt-3 font-display text-4xl font-semibold tracking-tight text-plum-950 sm:text-5xl">Occasions we celebrate with you</h2>
-      <p class="mt-4 text-lg text-slate-600">Ready-to-ship packages designed by our gifting experts. Fully brandable, priced per employee, delivered anywhere in India.</p>
+      <p class="mt-4 text-lg text-slate-600">Ready-to-ship packages designed by our gifting experts. Fully brandable, quoted to your budget, delivered anywhere in India.</p>
     </div>
     <div class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
       <% @occasions.each_with_index do |occasion, i| %>
@@ -107,61 +145,165 @@
   </div>
 </section>
 
+<%# ---------------- QUOTE BUILDER ---------------- %>
+<section id="build" class="relative scroll-mt-24 overflow-hidden py-24" data-controller="reveal">
+  <div class="absolute inset-x-0 top-0 -z-10 h-full bg-gradient-to-b from-cream-100 via-white to-cream-50"></div>
+  <div class="absolute -right-32 top-20 -z-10 h-96 w-96 rounded-full bg-rani-200/40 blur-3xl animate-aurora"></div>
+  <div class="mx-auto max-w-7xl px-6">
+    <div class="mx-auto max-w-2xl text-center" data-reveal-target="item">
+      <p class="inline-flex items-center gap-2 rounded-full bg-saffron-50 px-3 py-1 text-sm font-semibold uppercase tracking-widest text-saffron-600 ring-1 ring-saffron-100"><%= icon("sparkles", class: "h-4 w-4") %> Build your box</p>
+      <h2 class="mt-4 font-display text-4xl font-semibold tracking-tight text-plum-950 sm:text-5xl">Design your gift in 30 seconds</h2>
+      <p class="mt-4 text-lg text-slate-600">Tell us what you have in mind. Our gifting experts turn it into a curated, branded proposal with a custom quote — usually within one business day.</p>
+    </div>
+
+    <div class="mt-14 glow-border shadow-2xl shadow-plum-900/10" data-reveal-target="item"
+         data-controller="quote-builder" data-quote-builder-url-value="<%= new_contact_path %>">
+      <div class="glow-border-inner grid overflow-hidden bg-white lg:grid-cols-5">
+        <%# Controls %>
+        <div class="space-y-9 p-6 sm:p-10 lg:col-span-3">
+          <div>
+            <p class="flex items-center gap-3 font-semibold text-plum-900"><span class="qb-step" data-quote-builder-target="step">1</span> What's the occasion?</p>
+            <div class="mt-4 flex flex-wrap gap-2.5">
+              <% @occasions.each do |o| %>
+                <button type="button" class="chip" aria-pressed="false" data-quote-builder-target="occasion" data-name="<%= o.name %>" data-slug="<%= o.slug %>" data-action="quote-builder#pickOccasion" data-track="Quote builder: occasion <%= o.name %>"><span class="text-lg"><%= o.emoji %></span><%= o.name %></button>
+              <% end %>
+            </div>
+          </div>
+          <div>
+            <p class="flex items-center gap-3 font-semibold text-plum-900"><span class="qb-step is-done" data-quote-builder-target="step">2</span> How many people are you gifting?</p>
+            <div class="mt-5 flex items-center gap-5">
+              <div class="relative flex-1">
+                <div class="pointer-events-none absolute inset-x-0 inset-y-0 my-auto h-2 rounded-full bg-plum-100"></div>
+                <div class="pointer-events-none absolute inset-y-0 left-0 my-auto h-2 rounded-full bg-gradient-to-r from-saffron-500 to-rani-500" data-quote-builder-target="fill"></div>
+                <input type="range" min="10" max="5000" step="10" value="250" class="range-gift relative bg-transparent" aria-label="Number of recipients" data-quote-builder-target="headcount" data-action="input->quote-builder#update">
+              </div>
+              <p class="w-24 text-right font-display text-3xl font-semibold text-plum-900 tabular-nums" data-quote-builder-target="headcountLabel">250</p>
+            </div>
+            <div class="mt-2 flex justify-between text-xs font-medium text-slate-400"><span>10</span><span>1,000</span><span>5,000+</span></div>
+          </div>
+          <div>
+            <p class="flex items-center gap-3 font-semibold text-plum-900"><span class="qb-step" data-quote-builder-target="step">3</span> Pick what goes inside <span class="text-sm font-normal text-slate-500">(choose any)</span></p>
+            <div class="mt-4 flex flex-wrap gap-2.5">
+              <% [["🍫", "Chocolates"], ["🥜", "Dry fruits"], ["🍬", "Organic sweets"], ["☕", "Mugs"], ["🧴", "Bottles"], ["📔", "Diaries"], ["👕", "T-shirts"], ["🎧", "Tech gadgets"], ["👜", "Bags"], ["🪔", "Diyas & decor"], ["🖼️", "Art"], ["💌", "Personal cards"]].each do |emoji, name| %>
+                <button type="button" class="chip" aria-pressed="false" data-quote-builder-target="style" data-name="<%= name %>" data-emoji="<%= emoji %>" data-action="quote-builder#toggleStyle" data-track="Quote builder: item <%= name %>"><span class="text-lg"><%= emoji %></span><%= name %></button>
+              <% end %>
+            </div>
+          </div>
+          <div>
+            <p class="flex items-center gap-3 font-semibold text-plum-900"><span class="qb-step" data-quote-builder-target="step">4</span> Where should it go?</p>
+            <div class="mt-4 grid gap-2.5 sm:grid-cols-3">
+              <% [["home", "Home delivery", "To each employee"], ["building", "Bulk to office", "One or many sites"], ["link", "Self-fill link", "Employees add address"]].each do |ic, name, sub| %>
+                <button type="button" class="chip flex-col items-start gap-1 py-3.5 text-left" aria-pressed="false" data-quote-builder-target="delivery" data-name="<%= name %>" data-action="quote-builder#pickDelivery" data-track="Quote builder: delivery <%= name %>">
+                  <span class="flex items-center gap-2"><%= icon(ic, class: "h-4 w-4") %><%= name %></span><span class="text-xs font-medium opacity-75"><%= sub %></span>
+                </button>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <%# Live preview %>
+        <div class="relative flex flex-col overflow-hidden bg-gradient-to-br from-plum-900 via-plum-800 to-rani-700 p-6 text-white sm:p-10 lg:col-span-2">
+          <div class="absolute inset-0 pattern-grid-dark"></div>
+          <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-saffron-500/30 blur-3xl"></div>
+          <div class="relative">
+            <p class="text-xs font-semibold uppercase tracking-widest text-marigold-300">Your gift box</p>
+            <p class="mt-2 font-display text-2xl font-semibold" data-quote-builder-target="summary">Any occasion · 250 people</p>
+            <div class="mt-4 h-1.5 overflow-hidden rounded-full bg-white/15"><div class="h-full rounded-full bg-gradient-to-r from-marigold-400 to-saffron-500 transition-all duration-500" style="width:25%" data-quote-builder-target="progress"></div></div>
+          </div>
+          <div class="relative mt-8 flex-1 rounded-3xl border-2 border-dashed border-white/25 bg-white/5 p-5 backdrop-blur">
+            <div class="flex min-h-[9rem] flex-wrap content-start gap-3" data-quote-builder-target="box"></div>
+            <p class="absolute inset-0 grid place-items-center px-6 text-center text-sm text-white/60" data-quote-builder-target="emptyHint"><span><span class="mb-2 block text-4xl animate-float">🎁</span>Pick items to fill your box</span></p>
+          </div>
+          <ul class="relative mt-6 space-y-2 text-sm text-plum-100">
+            <% ["Free logo & branding mock-up", "Personalised card for each employee", "Dedicated gifting manager"].each do |t| %>
+              <li class="flex items-center gap-2"><%= icon("check-circle", class: "h-4 w-4 text-marigold-300") %><%= t %></li>
+            <% end %>
+          </ul>
+          <%= link_to new_contact_path, class: "btn btn-lg group relative mt-7 w-full bg-white text-plum-900 shadow-xl hover:-translate-y-0.5 hover:bg-marigold-100", data: { quote_builder_target: "cta", track: "Quote builder: Get my custom quote" } do %>
+            Get my custom quote <%= icon("arrow-right", class: "h-5 w-5 transition group-hover:translate-x-1", stroke: 2.2) %>
+          <% end %>
+          <p class="relative mt-3 text-center text-xs text-white/60">No commitment · Reply within one business day</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <%# ---------------- HOW IT WORKS ---------------- %>
-<section class="relative overflow-hidden bg-plum-950 py-24 text-white" data-controller="reveal">
+<section class="spotlight relative overflow-hidden bg-plum-950 py-24 text-white" data-controller="reveal spotlight" data-action="mousemove->spotlight#move">
   <div class="absolute inset-0 pattern-grid-dark"></div>
+  <div class="absolute inset-0 noise"></div>
   <div class="absolute left-1/2 top-0 h-72 w-[48rem] -translate-x-1/2 rounded-full bg-saffron-500/20 blur-3xl"></div>
-  <div class="relative mx-auto max-w-7xl px-6">
+  <div class="relative z-10 mx-auto max-w-7xl px-6">
     <div class="mx-auto max-w-2xl text-center" data-reveal-target="item">
       <p class="text-sm font-semibold uppercase tracking-widest text-marigold-400">How it works</p>
-      <h2 class="mt-3 font-display text-4xl font-semibold tracking-tight sm:text-5xl">From idea to doorstep in 4 steps</h2>
+      <h2 class="mt-3 font-display text-4xl font-semibold tracking-tight sm:text-5xl">From idea to doorstep in <span class="text-gradient animate-shimmer">4 steps</span></h2>
     </div>
-    <ol class="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+    <ol class="relative mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <li class="absolute left-[12%] right-[12%] top-[3.25rem] hidden h-px list-none bg-gradient-to-r from-saffron-500/0 via-saffron-500/60 to-rani-500/0 lg:block" aria-hidden="true"></li>
       <% [
-        ["sparkles", "Choose", "Pick a curated package for the occasion — or build your own box item by item with live pricing."],
+        ["sparkles", "Choose", "Pick a curated package for the occasion — or build your own box item by item."],
         ["users", "Add recipients", "Upload your employee list or let employees fill in their own address and T-shirt size via a secure link."],
-        ["receipt", "Approve & pay", "Review a transparent quote with GST split, get a proforma, and pay online or by bank transfer."],
+        ["receipt", "Approve your quote", "Get a tailored quote and proforma with the GST split, then pay online or by bank transfer."],
         ["truck", "We deliver", "Verified vendors pack, brand and ship. Track every recipient and download delivery reports & tax invoices."]
       ].each_with_index do |(ic, title, body), i| %>
-        <li class="group relative rounded-3xl bg-white/5 p-7 ring-1 ring-white/10 backdrop-blur transition hover:bg-white/10" style="transition-delay: <%= i * 100 %>ms" data-reveal-target="item">
-          <span class="absolute right-6 top-5 font-display text-6xl font-semibold text-white/5 transition group-hover:text-white/10">0<%= i + 1 %></span>
-          <span class="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-saffron-500 to-rani-500 shadow-lg shadow-rani-900/40"><%= icon(ic, class: "h-6 w-6", stroke: 1.8) %></span>
+        <li class="group relative rounded-3xl bg-white/[.04] p-7 ring-1 ring-white/10 backdrop-blur transition duration-300 hover:-translate-y-1 hover:bg-white/[.08] hover:ring-saffron-400/40" style="transition-delay: <%= i * 100 %>ms" data-reveal-target="item">
+          <span class="absolute right-6 top-5 font-display text-6xl font-semibold text-white/5 transition group-hover:text-white/15">0<%= i + 1 %></span>
+          <span class="relative grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-saffron-500 to-rani-500 shadow-lg shadow-rani-900/40 ring-4 ring-plum-950 transition duration-500 group-hover:rotate-6 group-hover:scale-110"><%= icon(ic, class: "h-6 w-6", stroke: 1.8) %></span>
           <h3 class="mt-6 text-xl font-semibold"><%= title %></h3>
           <p class="mt-2 text-sm leading-relaxed text-plum-200"><%= body %></p>
         </li>
       <% end %>
     </ol>
-    <div class="mt-12 text-center"><%= link_to how_it_works_path, class: "inline-flex items-center gap-2 text-sm font-semibold text-marigold-400 hover:text-marigold-300" do %>See the full process <%= icon("arrow-right", class: "h-4 w-4") %><% end %></div>
+    <div class="mt-12 text-center"><%= link_to how_it_works_path, class: "inline-flex items-center gap-2 rounded-full bg-white/5 px-5 py-2.5 text-sm font-semibold text-marigold-400 ring-1 ring-white/10 transition hover:bg-white/10 hover:text-marigold-300" do %>See the full process <%= icon("arrow-right", class: "h-4 w-4") %><% end %></div>
   </div>
 </section>
 
-<%# ---------------- WHY US ---------------- %>
+<%# ---------------- WHY US (bento) ---------------- %>
 <section id="why-us" class="scroll-mt-24 py-24" data-controller="reveal">
-  <div class="mx-auto grid max-w-7xl gap-16 px-6 lg:grid-cols-5">
-    <div class="lg:col-span-2" data-reveal-target="item">
+  <div class="mx-auto max-w-7xl px-6">
+    <div class="mx-auto max-w-2xl text-center" data-reveal-target="item">
       <p class="text-sm font-semibold uppercase tracking-widest text-saffron-600">Why Avighna eGiftMitra</p>
       <h2 class="mt-3 font-display text-4xl font-semibold tracking-tight text-plum-950 sm:text-5xl">Gifting that HR doesn't have to chase.</h2>
       <p class="mt-5 text-lg text-slate-600">One partner replaces a dozen vendor calls, spreadsheet trackers and courier follow-ups. You get a single invoice and real-time visibility.</p>
-      <div class="mt-8 rounded-3xl bg-gradient-to-br from-saffron-50 to-rani-50 p-6 ring-1 ring-saffron-100">
-        <p class="font-display text-xl text-plum-900">"We gifted 1,800 employees across 22 cities for Diwali without a single spreadsheet."</p>
-        <p class="mt-3 text-sm font-semibold text-slate-600">— Head of People, a Bengaluru fintech</p>
-      </div>
     </div>
-    <div class="grid gap-5 sm:grid-cols-2 lg:col-span-3">
+    <div class="mt-14 grid auto-rows-[minmax(13rem,auto)] gap-5 md:grid-cols-3">
+      <%# Feature: delivery map %>
+      <div class="spotlight group relative overflow-hidden rounded-3xl bg-gradient-to-br from-plum-900 to-plum-800 p-8 text-white md:col-span-2 md:row-span-2" data-controller="spotlight" data-action="mousemove->spotlight#move" data-reveal-target="item">
+        <div class="absolute inset-0 pattern-grid-dark"></div>
+        <div class="relative z-10 max-w-md">
+          <span class="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-saffron-500 to-rani-500"><%= icon("map-pin", class: "h-6 w-6") %></span>
+          <h3 class="mt-6 font-display text-3xl font-semibold">Pan-India doorstep delivery</h3>
+          <p class="mt-3 text-plum-200">Individual home delivery, bulk to offices, or employee self-fill. Track every recipient with AWB links — from metros to tier-3 towns.</p>
+        </div>
+        <div class="relative z-10 mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <% [["Bengaluru", "98%"], ["Mumbai", "96%"], ["Delhi NCR", "97%"], ["Pune", "99%"]].each_with_index do |(city, pct), i| %>
+            <div class="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10 backdrop-blur transition group-hover:bg-white/10">
+              <p class="flex items-center gap-1.5 text-xs text-plum-200"><span class="relative flex h-2 w-2"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" style="animation-delay:<%= i * 300 %>ms"></span><span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span></span><%= city %></p>
+              <p class="mt-1 font-display text-2xl font-semibold"><%= pct %></p>
+              <p class="text-[11px] text-plum-300">on-time</p>
+            </div>
+          <% end %>
+        </div>
+        <svg class="absolute -bottom-10 -right-10 h-72 w-72 text-white/[.04] transition duration-700 group-hover:scale-110 group-hover:text-white/[.07]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z"/></svg>
+      </div>
       <% [
-        ["shield", "Verified vendors only", "Every supplier is KYC-checked — GSTIN, PAN, FSSAI for food — and scored on quality and on-time delivery."],
-        ["map-pin", "Pan-India doorstep delivery", "Individual home delivery, bulk to offices, or employee self-fill. Track each recipient with AWB links."],
-        ["palette", "Your brand, everywhere", "Logo on products, personalised cards with each employee's name, custom messages from leadership."],
-        ["receipt", "GST-perfect paperwork", "Proforma, tax invoice with CGST/SGST or IGST by place of supply, credit notes and delivery reports."],
-        ["bolt", "Automations", "Birthdays, work anniversaries and onboarding kits go out automatically — nobody gets forgotten."],
-        ["chart", "Spend insights", "See spend by occasion, department and month. Approval limits keep budgets in control."]
-      ].each_with_index do |(ic, title, body), i| %>
-        <div class="card card-body group transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-saffron-500/10" style="transition-delay: <%= (i % 2) * 100 %>ms" data-reveal-target="item">
-          <span class="grid h-11 w-11 place-items-center rounded-xl bg-saffron-50 text-saffron-600 ring-1 ring-saffron-100 transition group-hover:bg-gradient-to-br group-hover:from-saffron-500 group-hover:to-rani-500 group-hover:text-white"><%= icon(ic, class: "h-5 w-5") %></span>
-          <h3 class="mt-4 font-semibold text-slate-900"><%= title %></h3>
+        ["shield", "Verified vendors only", "Every supplier is KYC-checked — GSTIN, PAN, FSSAI for food — and scored on quality and on-time delivery.", "from-emerald-50 to-teal-50 ring-emerald-100", "text-emerald-600"],
+        ["palette", "Your brand, everywhere", "Logo on products, personalised cards with each employee's name, custom messages from leadership.", "from-rani-50 to-plum-50 ring-rani-100", "text-rani-600"],
+        ["receipt", "GST-perfect paperwork", "Proforma, tax invoice with CGST/SGST or IGST by place of supply, credit notes and delivery reports.", "from-saffron-50 to-marigold-100 ring-saffron-100", "text-saffron-600"],
+        ["bolt", "Automations", "Birthdays, work anniversaries and onboarding kits go out automatically — nobody gets forgotten.", "from-sky-50 to-indigo-50 ring-sky-100", "text-indigo-600"],
+        ["chart", "Spend insights", "See spend by occasion, department and month. Approval limits keep budgets in control.", "from-plum-50 to-cream-100 ring-plum-100", "text-plum-600"]
+      ].each_with_index do |(ic, title, body, bg, fg), i| %>
+        <div class="group relative overflow-hidden rounded-3xl bg-gradient-to-br <%= bg %> p-7 ring-1 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-plum-900/10" style="transition-delay: <%= (i % 3) * 80 %>ms" data-reveal-target="item">
+          <span class="grid h-11 w-11 place-items-center rounded-xl bg-white shadow-sm <%= fg %> transition duration-500 group-hover:-rotate-6 group-hover:scale-110"><%= icon(ic, class: "h-5 w-5") %></span>
+          <h3 class="mt-5 text-lg font-semibold text-slate-900"><%= title %></h3>
           <p class="mt-1.5 text-sm leading-relaxed text-slate-600"><%= body %></p>
         </div>
       <% end %>
+      <div class="flex flex-col justify-between rounded-3xl bg-gradient-to-br from-saffron-500 to-rani-500 p-7 text-white shadow-xl shadow-rani-500/20" data-reveal-target="item">
+        <p class="font-display text-xl leading-snug">"We gifted 1,800 employees across 22 cities for Diwali without a single spreadsheet."</p>
+        <p class="mt-4 text-sm font-semibold text-white/85">— Head of People, a Bengaluru fintech</p>
+      </div>
     </div>
   </div>
 </section>
@@ -189,16 +331,18 @@
 
 <%# ---------------- CTA ---------------- %>
 <section class="px-6 py-24">
-  <div class="relative mx-auto max-w-6xl overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-saffron-500 via-rani-500 to-plum-700 px-8 py-16 text-center text-white shadow-2xl shadow-rani-500/30 sm:px-16">
+  <div class="spotlight relative mx-auto max-w-6xl overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-saffron-500 via-rani-500 to-plum-700 bg-[length:200%_200%] px-8 py-20 text-center text-white shadow-2xl shadow-rani-500/30 animate-gradient-x sm:px-16" data-controller="spotlight" data-action="mousemove->spotlight#move">
     <div class="absolute inset-0 opacity-20 [background-image:radial-gradient(white_1px,transparent_1px)] [background-size:22px_22px]"></div>
-    <div class="absolute -left-10 top-6 text-7xl opacity-80 animate-float">🎁</div>
-    <div class="absolute bottom-6 right-8 text-6xl opacity-80 animate-float-slow">🪔</div>
-    <div class="relative">
-      <h2 class="font-display text-4xl font-semibold sm:text-5xl">Planning gifts for your team?</h2>
-      <p class="mx-auto mt-4 max-w-xl text-lg text-white/90">Tell us the occasion, headcount and budget. We'll send curated options with pricing within one business day.</p>
-      <div class="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-        <%= link_to "Book a free demo", new_contact_path, class: "btn btn-lg bg-white text-plum-900 shadow-xl hover:-translate-y-0.5" %>
-        <%= link_to "Talk to us: #{Setting[:support_phone]}", "tel:#{Setting[:support_phone].to_s.delete(' ')}", class: "btn btn-lg bg-white/15 text-white ring-1 ring-white/40 hover:bg-white/25" %>
+    <div class="absolute inset-0 noise"></div>
+    <div class="absolute -left-6 top-8 text-7xl opacity-90 animate-float">🎁</div>
+    <div class="absolute bottom-8 right-10 text-6xl opacity-90 animate-float-slow">🪔</div>
+    <div class="absolute right-[18%] top-10 text-4xl opacity-80 animate-float" style="animation-delay:-3s">🎉</div>
+    <div class="relative z-10">
+      <h2 class="font-display text-4xl font-semibold sm:text-6xl">Planning gifts for your team?</h2>
+      <p class="mx-auto mt-5 max-w-xl text-lg text-white/90">Tell us the occasion, headcount and budget. We'll send curated options with a custom quote within one business day.</p>
+      <div class="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
+        <%= link_to new_contact_path, class: "btn btn-lg group bg-white text-plum-900 shadow-xl hover:-translate-y-0.5", data: { track: "CTA: Get a free quote" } do %>Get a free quote <%= icon("arrow-right", class: "h-5 w-5 transition group-hover:translate-x-1", stroke: 2.2) %><% end %>
+        <%= link_to "tel:#{Setting[:support_phone].to_s.delete(' ')}", class: "btn btn-lg bg-white/15 text-white ring-1 ring-white/40 backdrop-blur hover:bg-white/25", data: { track: "CTA: Call us" } do %><%= icon("phone", class: "h-5 w-5") %> <%= Setting[:support_phone] %><% end %>
       </div>
     </div>
   </div>
