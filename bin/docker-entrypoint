@@ -16,15 +16,21 @@ fi
 
 # If running the rails server then create or migrate existing database
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  # Railway's private network DNS (*.railway.internal) can take a few seconds to come up
-  # after the container starts. Wait for the database to accept connections before migrating.
-  echo "[entrypoint] Waiting for database..."
+  # Wait for the database (Railway public TCP proxy) to accept connections before migrating.
+  DB_HOST_CHECK="acela.proxy.rlwy.net"
+  DB_PORT_CHECK="31332"
+  echo "[entrypoint] Waiting for database ${DB_HOST_CHECK}:${DB_PORT_CHECK}..."
   for i in $(seq 1 30); do
-    if pg_isready -q -h postgres.railway.internal -p 5432; then
+    if ! getent hosts "${DB_HOST_CHECK}" > /dev/null; then
+      echo "[entrypoint] attempt ${i}/30: DNS cannot resolve ${DB_HOST_CHECK} "
+    elif pg_isready -h "${DB_HOST_CHECK}" -p "${DB_PORT_CHECK}" -t 3; then
+      echo "[entrypoint] Database reachable."
       break
+    else
+      echo "[entrypoint] attempt ${i}/30: ${DB_HOST_CHECK} resolves to $(getent hosts "${DB_HOST_CHECK}" | awk '{print $1}') but Postgres is not accepting connections"
     fi
     if [ "${i}" -eq 30 ]; then
-      echo "[entrypoint] ERROR: database not reachable after 60s. Check that the Postgres service is in the same Railway project/environment." >&2
+      echo "[entrypoint] ERROR: database not reachable after 30 attempts." >&2
       exit 1
     fi
     sleep 2

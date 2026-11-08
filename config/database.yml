@@ -24,8 +24,8 @@ test:
 
 # Production uses ONE database (e.g. Railway Postgres). Solid Queue / Cache / Cable
 # tables live in the primary DB (see db/migrate/*_create_solid_tables.rb).
-# Connection URL is hardcoded below (Railway private network).
+# Connection URL is hardcoded below (Railway public TCP proxy).
 production:
   <<: *default
-  url: "postgresql://postgres:jWhWpsAhxrIndGoQuzhxQSFLXrGOWDZM@postgres.railway.internal:5432/railway"
+  url: "postgresql://postgres:jWhWpsAhxrIndGoQuzhxQSFLXrGOWDZM@acela.proxy.rlwy.net:31332/railway"
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 }.to_i + 5 %>
