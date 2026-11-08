@@ -24,8 +24,8 @@ test:
 
 # Production uses ONE database (e.g. Railway Postgres). Solid Queue / Cache / Cable
 # tables live in the primary DB (see db/migrate/*_create_solid_tables.rb).
-# Set DATABASE_URL in the hosting environment — never commit it.
+# Connection URL is hardcoded below (Railway private network).
 production:
   <<: *default
-  url: <%= ENV["DATABASE_URL"].presence || "postgresql://postgres:jWhWpsAhxrIndGoQuzhxQSFLXrGOWDZM@postgres.railway.internal:5432/railway" %>
+  url: "postgresql://postgres:jWhWpsAhxrIndGoQuzhxQSFLXrGOWDZM@postgres.railway.internal:5432/railway"
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 }.to_i + 5 %>

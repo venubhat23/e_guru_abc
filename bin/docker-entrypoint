@@ -16,6 +16,20 @@ fi
 
 # If running the rails server then create or migrate existing database
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+  # Railway's private network DNS (*.railway.internal) can take a few seconds to come up
+  # after the container starts. Wait for the database to accept connections before migrating.
+  echo "[entrypoint] Waiting for database..."
+  for i in $(seq 1 30); do
+    if pg_isready -q -h postgres.railway.internal -p 5432; then
+      break
+    fi
+    if [ "${i}" -eq 30 ]; then
+      echo "[entrypoint] ERROR: database not reachable after 60s. Check that the Postgres service is in the same Railway project/environment." >&2
+      exit 1
+    fi
+    sleep 2
+  done
+
   echo "[entrypoint] Connecting to database and running db:prepare..."
   ./bin/rails db:prepare
   echo "[entrypoint] Database ready."
