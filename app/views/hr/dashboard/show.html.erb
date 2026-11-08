@@ -1,0 +1,42 @@
+<% page_title "Dashboard" %>
+<div class="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-br from-saffron-500 via-rani-500 to-plum-700 p-6 text-white shadow-xl shadow-rani-500/20 sm:p-8">
+  <div class="absolute inset-0 opacity-20 [background-image:radial-gradient(white_1px,transparent_1px)] [background-size:20px_20px]"></div>
+  <div class="absolute bottom-0 right-6 hidden text-8xl opacity-90 animate-float sm:block">🎁</div>
+  <div class="relative max-w-xl">
+    <p class="text-sm font-medium text-white/80"><%= @company.name %></p>
+    <h1 class="mt-1 font-display text-3xl font-semibold sm:text-4xl">Namaste, <%= current_user.first_name %>!</h1>
+    <p class="mt-2 text-white/90">Plan your next celebration. Diwali bookings close soon — lock in prices early.</p>
+    <div class="mt-5 flex flex-wrap gap-2">
+      <span class="btn cursor-not-allowed bg-white/90 text-plum-900 opacity-80" title="Phase 4"><%= icon("gift", class: "h-4 w-4") %> Browse packages · soon</span>
+      <%= link_to hr_team_members_path, class: "btn bg-white/15 text-white ring-1 ring-white/30 hover:bg-white/25" do %><%= icon("users", class: "h-4 w-4") %> Your team<% end %>
+    </div>
+  </div>
+</div>
+<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+  <%= render Ui::StatCardComponent.new(label: "Total spend", value: inr(0), icon: "rupee", tone: :orange, hint: "This financial year") %>
+  <%= render Ui::StatCardComponent.new(label: "Active bookings", value: 0, icon: "clipboard", tone: :pink) %>
+  <%= render Ui::StatCardComponent.new(label: "Employees", value: 0, icon: "users", tone: :purple, hint: "Directory arrives in Phase 3") %>
+  <%= render Ui::StatCardComponent.new(label: "Team members", value: @team_count, icon: "shield", tone: :green, href: hr_team_members_path) %>
+</div>
+<div class="mt-6 grid gap-6 lg:grid-cols-3">
+  <div class="card card-body lg:col-span-2">
+    <h2 class="font-semibold text-slate-900">Get started</h2>
+    <ol class="mt-4 space-y-3">
+      <% [["building", "Complete your company profile", "GSTIN, billing address and logo for invoices.", true], ["users", "Upload your employee directory", "CSV/XLSX import with validation.", false], ["gift", "Pick a package or build a box", "Curated kits or the Unbox builder.", false], ["receipt", "Book, pay and track", "Proforma, payment and live delivery tracking.", false]].each_with_index do |(ic, t, b, ready), i| %>
+        <li class="flex items-center gap-4 rounded-2xl p-3 ring-1 ring-slate-100 <%= ready ? 'bg-saffron-50/50' : '' %>">
+          <span class="grid h-10 w-10 place-items-center rounded-xl <%= ready ? 'bg-gradient-to-br from-saffron-500 to-rani-500 text-white' : 'bg-slate-100 text-slate-500' %>"><%= icon(ic) %></span>
+          <div class="flex-1"><p class="text-sm font-semibold text-slate-900"><%= i + 1 %>. <%= t %></p><p class="text-xs text-slate-500"><%= b %></p></div>
+          <% if ready %><%= link_to "Open", hr_company_path, class: "btn btn-secondary btn-sm" %><% else %><span class="text-xs font-semibold text-slate-400">Coming soon</span><% end %>
+        </li>
+      <% end %>
+    </ol>
+  </div>
+  <div class="card card-body">
+    <h2 class="font-semibold text-slate-900">Upcoming occasions</h2>
+    <ul class="mt-4 space-y-3">
+      <% Occasion.active.ordered.limit(5).each do |o| %>
+        <li class="flex items-center gap-3"><span class="text-2xl"><%= o.emoji %></span><div class="flex-1"><p class="text-sm font-semibold text-slate-800"><%= o.name %></p><p class="text-xs text-slate-500">from <%= inr(o.from_price_paise) %>/employee</p></div><% if o.in_season? %><%= render Ui::BadgeComponent.new(text: "In season", tone: :orange) %><% end %></li>
+      <% end %>
+    </ul>
+  </div>
+</div>

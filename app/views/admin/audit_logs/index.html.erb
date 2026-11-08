@@ -1,0 +1,33 @@
+<% page_title "Audit log" %>
+<%= render Ui::PageHeaderComponent.new(title: "Audit log", subtitle: "Every create, update and delete across the platform (PaperTrail).", eyebrow: "System") %>
+<%= form_with url: admin_audit_logs_path, method: :get, class: "mb-5 max-w-xs" do |f| %>
+  <%= f.select :type, @types, { include_blank: "All record types", selected: params[:type] }, class: "input", onchange: "this.form.requestSubmit()", aria: { label: "Record type" } %>
+<% end %>
+<% if @versions.any? %>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>When</th><th>Who</th><th>Event</th><th>Record</th><th>Changes</th></tr></thead>
+      <tbody>
+        <% @versions.each do |v| %>
+          <tr>
+            <td class="whitespace-nowrap text-xs text-slate-500"><%= v.created_at.strftime("%d %b %Y %I:%M %p") %></td>
+            <td><%= @actors[v.whodunnit]&.name || "System" %></td>
+            <td><%= render Ui::BadgeComponent.new(text: v.event.humanize, tone: { "create" => :green, "update" => :blue, "destroy" => :red }[v.event] || :gray) %></td>
+            <td class="whitespace-nowrap font-medium"><%= v.item_type %> #<%= v.item_id %></td>
+            <td class="max-w-md">
+              <% changes = audit_changes(v) %>
+              <div class="flex flex-wrap gap-1">
+                <% changes.first(6).each do |attr, (from, to)| %>
+                  <span class="rounded-md bg-slate-100 px-1.5 py-0.5 text-[11px] text-slate-600" title="<%= from.inspect %> → <%= to.inspect %>"><strong><%= attr %></strong>: <%= to.to_s.truncate(24) %></span>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <%= pagy_nav_tw(@pagy) %>
+<% else %>
+  <%= render Ui::EmptyStateComponent.new(title: "No audit entries", icon: "clock") %>
+<% end %>

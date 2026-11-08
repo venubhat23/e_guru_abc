@@ -1,0 +1,107 @@
+<% page_title @lead.company_name %>
+<%= link_to admin_leads_path, class: "mb-4 inline-flex items-center gap-1 text-sm font-semibold text-slate-500 hover:text-slate-800" do %><%= icon("chevron-left", class: "h-4 w-4") %> All leads<% end %>
+
+<div class="card mb-6">
+  <div class="h-2 rounded-t-2xl bg-gradient-to-r from-saffron-500 via-rani-500 to-plum-600"></div>
+  <div class="card-body flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+    <div class="flex items-center gap-4">
+      <span class="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-saffron-100 to-rani-100 text-lg font-bold text-plum-800"><%= @lead.company_name.first(2).upcase %></span>
+      <div>
+        <div class="flex flex-wrap items-center gap-2"><h1 class="text-2xl font-bold text-slate-900"><%= @lead.company_name %></h1><%= lead_status_badge(@lead) %></div>
+        <p class="text-sm text-slate-500"><%= @lead.name %> · received <%= time_ago(@lead.created_at) %> via <%= @lead.source %></p>
+      </div>
+    </div>
+    <% if policy(@lead).transition? %>
+      <div class="flex flex-wrap gap-2">
+        <% (@lead.available_events - [:mark_lost]).each do |event| %>
+          <%= button_to Lead::EVENT_LABELS[event], transition_admin_lead_path(@lead, event:), method: :patch, class: "btn #{event == :mark_won ? 'btn-success' : 'btn-secondary'}" %>
+        <% end %>
+        <% if @lead.open? %>
+          <div data-controller="dropdown" class="relative">
+            <button type="button" class="btn btn-ghost text-rani-600" data-action="dropdown#toggle">Mark lost…</button>
+            <div class="absolute right-0 z-20 mt-2 hidden w-80 rounded-2xl bg-white p-4 shadow-2xl ring-1 ring-slate-200" data-dropdown-target="menu">
+              <%= form_with url: transition_admin_lead_path(@lead, event: :mark_lost), method: :patch do |f| %>
+                <%= f.label :lost_reason, "Why was this lead lost?", class: "label" %>
+                <%= f.text_area :lost_reason, rows: 3, required: true, class: "input", placeholder: "e.g. Budget too low, chose competitor…" %>
+                <%= f.submit "Mark as lost", class: "btn btn-danger mt-3 w-full" %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+  <% steps = %w[fresh contacted demo_scheduled proposal_sent won] %>
+  <% current = steps.index(@lead.status) %>
+  <ol class="grid grid-cols-5 border-t border-slate-100 text-center text-[11px] font-semibold sm:text-xs">
+    <% steps.each_with_index do |s, i| %>
+      <li class="relative px-1 py-3 <%= current && i <= current ? 'text-plum-900' : 'text-slate-400' %>">
+        <span class="mx-auto mb-1 grid h-6 w-6 place-items-center rounded-full <%= current && i <= current ? 'bg-gradient-to-br from-saffron-500 to-rani-500 text-white' : 'bg-slate-100' %>"><%= current && i < current ? icon("check", class: "h-3.5 w-3.5", stroke: 3) : i + 1 %></span>
+        <%= Lead::STATUS_LABELS[s] %>
+      </li>
+    <% end %>
+  </ol>
+  <% if @lead.lost? %><div class="rounded-b-2xl border-t border-rani-100 bg-rani-50 px-6 py-3 text-sm text-rani-700"><strong>Lost:</strong> <%= @lead.lost_reason %></div><% end %>
+</div>
+
+<div class="grid gap-6 lg:grid-cols-3">
+  <div class="space-y-6 lg:col-span-2">
+    <div class="card card-body">
+      <h2 class="font-semibold text-slate-900">Enquiry details</h2>
+      <dl class="mt-4 grid gap-x-6 gap-y-4 sm:grid-cols-2">
+        <% [["Contact", @lead.name], ["Work email", mail_to(@lead.work_email, nil, class: "text-saffron-600 hover:underline")], ["Phone", link_to(@lead.phone, "tel:#{@lead.phone}", class: "text-saffron-600 hover:underline")], ["Employees", @lead.employee_count ? Inr.group(@lead.employee_count) : "—"], ["Occasion", @lead.occasion&.name || "—"], ["Budget per employee", inr(@lead.budget_per_employee_paise)], ["Estimated deal size", (@lead.budget_per_employee_paise && @lead.employee_count) ? inr(@lead.budget_per_employee_paise * @lead.employee_count) : "—"], ["Consent", @lead.consent? ? "Given ✔" : "No"]].each do |label, value| %>
+          <div><dt class="text-xs font-medium uppercase tracking-wide text-slate-400"><%= label %></dt><dd class="mt-1 text-sm font-medium text-slate-800"><%= value %></dd></div>
+        <% end %>
+      </dl>
+      <% if @lead.message.present? %><div class="mt-5 rounded-xl bg-cream-100 p-4 text-sm text-slate-700"><p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Message</p><%= simple_format(@lead.message) %></div><% end %>
+    </div>
+
+    <div class="card card-body" id="activity">
+      <h2 class="font-semibold text-slate-900">Activity</h2>
+      <% if policy(@lead).add_note? %>
+        <%= form_with model: @note, url: admin_lead_notes_path(@lead), class: "mt-4 flex flex-col gap-3 sm:flex-row" do |f| %>
+          <%= f.text_area :body, rows: 2, placeholder: "Add a note — call summary, next steps…", class: "input flex-1", required: true %>
+          <%= f.submit "Add note", class: "btn btn-dark self-end sm:self-stretch" %>
+        <% end %>
+      <% end %>
+      <ol class="relative mt-6 space-y-5 border-l-2 border-slate-100 pl-6">
+        <% @activities.each do |a| %>
+          <li class="relative">
+            <span class="absolute -left-[33px] grid h-6 w-6 place-items-center rounded-full ring-4 ring-white <%= { 'note' => 'bg-plum-500', 'status_change' => 'bg-saffron-500', 'converted' => 'bg-emerald-500', 'created' => 'bg-sky-500' }.fetch(a.kind, 'bg-slate-400') %> text-white"><%= icon({ "note" => "chat", "status_change" => "switch", "converted" => "building", "created" => "sparkles", "owner_change" => "user", "follow_up" => "calendar" }.fetch(a.kind, "clock"), class: "h-3 w-3", stroke: 2.2) %></span>
+            <p class="text-sm text-slate-800"><%= a.kind == "note" ? simple_format(a.body, {}, wrapper_tag: "span") : a.body %></p>
+            <p class="mt-0.5 text-xs text-slate-400"><%= a.user&.name || "System" %> · <%= a.created_at.strftime("%d %b %Y, %I:%M %p") %></p>
+          </li>
+        <% end %>
+      </ol>
+    </div>
+  </div>
+
+  <div class="space-y-6">
+    <div class="card card-body">
+      <h2 class="font-semibold text-slate-900">Ownership & follow-up</h2>
+      <%= form_with model: [:admin, @lead], class: "mt-4 space-y-4" do |f| %>
+        <div><%= f.label :owner_id, "Owner", class: "label" %><%= f.collection_select :owner_id, @owners, :id, :name, { include_blank: "Unassigned" }, class: "input", disabled: !policy(@lead).update? %></div>
+        <div><%= f.label :follow_up_on, "Follow-up date", class: "label" %><%= f.date_field :follow_up_on, class: "input", disabled: !policy(@lead).update? %></div>
+        <% if policy(@lead).update? %><%= f.submit "Save", class: "btn btn-dark w-full" %><% end %>
+      <% end %>
+    </div>
+
+    <div class="card card-body">
+      <h2 class="font-semibold text-slate-900">Convert to company</h2>
+      <% if @lead.converted? %>
+        <p class="mt-2 text-sm text-slate-600">Converted on <%= @lead.converted_at&.strftime("%d %b %Y") %>.</p>
+        <%= link_to "Open #{@lead.company.legal_name} →", admin_company_path(@lead.company), class: "btn btn-secondary mt-4 w-full" %>
+      <% elsif policy(@lead).convert? %>
+        <p class="mt-1 text-sm text-slate-500">Creates a company workspace and marks this lead as won.</p>
+        <%= form_with url: convert_admin_lead_path(@lead), scope: :company, class: "mt-4 space-y-3", data: { turbo_confirm: "Create a company from this lead?" } do |f| %>
+          <div><%= f.label :legal_name, "Legal name", class: "label" %><%= f.text_field :legal_name, value: @lead.company_name, class: "input", required: true %></div>
+          <div><%= f.label :gstin, "GSTIN (optional)", class: "label" %><%= f.text_field :gstin, class: "input uppercase", placeholder: "29ABCDE1234F1Z5", maxlength: 15 %></div>
+          <div><%= f.label :state, class: "label" %><%= f.select :state, Gstin.state_names, { include_blank: "Select state" }, class: "input" %></div>
+          <%= f.button type: "submit", class: "btn btn-primary w-full" do %><%= icon("building", class: "h-4 w-4") %> Convert to company<% end %>
+        <% end %>
+      <% else %>
+        <p class="mt-2 text-sm text-slate-500">This lead can't be converted<%= " (lost)" if @lead.lost? %>.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

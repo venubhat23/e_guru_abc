@@ -1,0 +1,34 @@
+<% page_title "Bookings" %>
+<%= render Ui::PageHeaderComponent.new(title: "Bookings inbox", subtitle: "Every booking across companies — filter by status, company, occasion or assignment mode.", eyebrow: "Operations") %>
+<%= render "admin/shared/tabs", tabs: { "open" => "Open" }.merge(Booking::STATUS_LABELS.select { |k, _| @counts[k].to_i.positive? }), counts: @counts, path_helper: :admin_bookings_path %>
+<%= form_with url: admin_bookings_path, method: :get, class: "card card-body mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4", data: { controller: "autosubmit" } do |f| %>
+  <%= hidden_field_tag :status, params[:status] if params[:status].present? %>
+  <div class="relative"><span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400"><%= icon("search", class: "h-4 w-4") %></span><%= f.search_field :q, value: params[:q], placeholder: "Booking number…", class: "input pl-9", data: { action: "input->autosubmit#debounced" }, aria: { label: "Booking number" } %></div>
+  <%= f.select :company_id, options_from_collection_for_select(@companies, :id, :name, params[:company_id]), { include_blank: "All companies" }, class: "input", data: { action: "autosubmit#submit" }, aria: { label: "Company" } %>
+  <%= f.select :occasion_id, options_from_collection_for_select(@occasions, :id, :name, params[:occasion_id]), { include_blank: "All occasions" }, class: "input", data: { action: "autosubmit#submit" }, aria: { label: "Occasion" } %>
+  <%= f.select :mode, options_for_select([["Any assignment mode", ""], ["Auto", "auto"], ["Manual", "manual"]], params[:mode]), {}, class: "input", data: { action: "autosubmit#submit" }, aria: { label: "Assignment mode" } %>
+<% end %>
+<% if @bookings.any? %>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>Booking</th><th>Company</th><th>Package</th><th class="text-right">Kits</th><th class="text-right">Total</th><th>Deliver by</th><th>Mode</th><th>Status</th></tr></thead>
+      <tbody>
+        <% @bookings.each do |b| %>
+          <tr>
+            <td><%= link_to b.number, admin_booking_path(b), class: "font-mono font-semibold text-plum-900 hover:text-saffron-700" %><span class="block text-xs text-slate-400"><%= b.created_at.strftime("%d %b %Y") %></span></td>
+            <td class="font-medium"><%= b.company.name %></td>
+            <td><span class="mr-1"><%= b.occasion&.emoji %></span><%= b.bookable_name %></td>
+            <td class="text-right"><%= b.quantity %></td>
+            <td class="text-right font-semibold tabular-nums"><%= inr(b.total_paise) %></td>
+            <td class="whitespace-nowrap <%= 'font-semibold text-rani-600' if b.requested_delivery_on < Date.current && Booking::OPEN.include?(b.status) %>"><%= b.requested_delivery_on.strftime("%d %b") %></td>
+            <td><%= render Ui::BadgeComponent.new(text: b.assignment_mode.capitalize, tone: b.assignment_mode == "manual" ? :orange : :blue, dot: false) %></td>
+            <td><%= booking_badge(b) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <%= pagy_nav_tw(@pagy) %>
+<% else %>
+  <%= render Ui::EmptyStateComponent.new(title: "No bookings match", icon: "clipboard") do |c| %><% c.with_action { link_to "Clear filters", admin_bookings_path, class: "btn btn-secondary" } %><% end %>
+<% end %>

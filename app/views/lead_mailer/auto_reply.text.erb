@@ -1,0 +1,10 @@
+Namaste <%= @lead.name.split.first %>,
+
+Thank you for reaching out to Avighna eGiftMitra. We've received your enquiry for <%= @lead.company_name %>.
+A gifting specialist will call you on <%= @lead.phone %> within one business day.
+
+Employees: <%= @lead.employee_count || "-" %>
+Budget per employee: <%= inr(@lead.budget_per_employee_paise) %>
+
+Warm regards,
+Team Avighna eGiftMitra

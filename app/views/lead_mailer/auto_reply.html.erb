@@ -1,0 +1,9 @@
+<h2 style="margin:0 0 12px;font-size:22px;color:#24103a;">Namaste <%= @lead.name.split.first %>,</h2>
+<p>Thank you for reaching out to Avighna eGiftMitra. We've received your enquiry for <strong><%= @lead.company_name %></strong><%= " for #{@lead.occasion.name}" if @lead.occasion %>.</p>
+<p>A gifting specialist will call you on <strong><%= @lead.phone %></strong> within one business day with curated options, pricing and timelines.</p>
+<table cellpadding="0" cellspacing="0" style="margin:18px 0;background:#fff6ed;border-radius:12px;padding:14px 18px;width:100%;font-size:14px;">
+  <tr><td style="color:#64748b;padding:3px 0;">Employees</td><td align="right"><strong><%= @lead.employee_count || "—" %></strong></td></tr>
+  <tr><td style="color:#64748b;padding:3px 0;">Budget per employee</td><td align="right"><strong><%= inr(@lead.budget_per_employee_paise) %></strong></td></tr>
+</table>
+<p>In the meantime, reply to this email with your employee locations or any preferences.</p>
+<p style="margin-top:22px;">Warm regards,<br><strong>Team Avighna eGiftMitra</strong></p>

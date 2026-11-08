@@ -1,0 +1,36 @@
+<% page_title "Products" %>
+<%= render "admin/shared/back", path: admin_catalogue_path, label: "Catalogue" %>
+<%= render Ui::PageHeaderComponent.new(title: "Products", subtitle: "Master product list with HSN, GST and computed HR price.", eyebrow: "Catalogue") do |c| %>
+  <% c.with_actions { link_to(new_admin_product_path, class: "btn btn-primary") { icon("plus", class: "h-4 w-4", stroke: 2) + " New product" } } %>
+<% end %>
+<%= form_with url: admin_products_path, method: :get, class: "card card-body mb-5 grid gap-3 sm:grid-cols-3", data: { controller: "autosubmit" } do |f| %>
+  <div class="relative"><span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400"><%= icon("search", class: "h-4 w-4") %></span><%= f.search_field :q, value: params[:q], placeholder: "Search name or SKU…", class: "input pl-9", data: { action: "input->autosubmit#debounced" }, aria: { label: "Search" } %></div>
+  <%= f.select :category_id, options_from_collection_for_select(@categories, :id, :name, params[:category_id]), { include_blank: "All categories" }, class: "input", data: { action: "autosubmit#submit" }, aria: { label: "Category" } %>
+  <%= f.select :review, options_for_select([["Any review status", ""], ["Approved", "approved"], ["Pending review", "pending"], ["Rejected", "rejected"]], params[:review]), {}, class: "input", data: { action: "autosubmit#submit" }, aria: { label: "Review status" } %>
+<% end %>
+<% if @products.any? %>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>Product</th><th>SKU</th><th>Category</th><th>HSN</th><th class="text-right">GST</th><th class="text-right">Volume</th><th class="text-right">Lowest vendor</th><th class="text-right">HR price</th><th>Status</th></tr></thead>
+      <tbody>
+        <% @products.each do |p| %>
+          <% low = @lowest[p.id] %>
+          <tr>
+            <td><%= link_to admin_product_path(p), class: "flex items-center gap-3" do %><%= item_emoji_tile(p.display_emoji, size: "h-9 w-9 text-lg") %><span class="font-semibold text-slate-900"><%= p.name %></span><% end %></td>
+            <td class="font-mono text-xs"><%= p.sku %></td>
+            <td><%= p.category.name %></td>
+            <td class="font-mono text-xs"><%= p.hsn_code %></td>
+            <td class="text-right"><%= p.gst_rate.to_i %>%</td>
+            <td class="text-right"><%= p.volume_units %></td>
+            <td class="text-right tabular-nums"><%= low ? inr(low) : "—" %></td>
+            <td class="text-right font-semibold tabular-nums text-plum-900"><%= low ? inr(@calc.hr_price(low, product: p)) : "—" %></td>
+            <td><%= status_badge(:review, p.review_status) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <%= pagy_nav_tw(@pagy) %>
+<% else %>
+  <%= render Ui::EmptyStateComponent.new(title: "No products match", icon: "cube") %>
+<% end %>

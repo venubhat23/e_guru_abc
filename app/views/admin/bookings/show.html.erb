@@ -1,0 +1,214 @@
+<% page_title @booking.number %>
+<% b = @booking %>
+<%= render "admin/shared/back", path: admin_bookings_path, label: "Bookings inbox" %>
+
+<div class="card mb-6">
+  <div class="h-2 rounded-t-2xl bg-gradient-to-r from-saffron-500 via-rani-500 to-plum-600"></div>
+  <div class="card-body flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <div class="flex items-start gap-4">
+      <%= item_emoji_tile(b.bookable.try(:display_emoji) || "🎁", size: "h-14 w-14 text-3xl") %>
+      <div>
+        <div class="flex flex-wrap items-center gap-2"><h1 class="font-mono text-2xl font-bold text-slate-900"><%= b.number %></h1><%= booking_badge(b) %>
+          <%= render Ui::BadgeComponent.new(text: "#{b.assignment_mode.capitalize} assignment", tone: b.assignment_mode == "manual" ? :orange : :blue, dot: false) %></div>
+        <p class="mt-1 text-sm text-slate-600"><%= link_to b.company.name, admin_company_path(b.company), class: "font-semibold hover:text-saffron-700" %> · <%= b.bookable_name %> · <%= b.quantity %> kits · deliver by <strong><%= b.requested_delivery_on.strftime("%d %b %Y") %></strong></p>
+        <p class="text-xs text-slate-400"><%= b.delivery_mode_label %> · place of supply <%= b.place_of_supply_state %> · created by <%= b.created_by&.name %> <%= time_ago(b.created_at) %></p>
+      </div>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <%= link_to proforma_admin_booking_path(b), class: "btn btn-secondary", target: "_blank" do %><%= icon("document", class: "h-4 w-4") %> Proforma<% end %>
+      <%= link_to delivery_report_admin_booking_path(b), class: "btn btn-secondary" do %><%= icon("download", class: "h-4 w-4") %> Delivery report<% end %>
+      <% if policy(b).operate? %>
+        <% if b.assigning? && b.unassigned_recipients.exists? %><%= button_to "Run auto-assign", auto_assign_admin_booking_path(b), class: "btn btn-primary" %><% end %>
+        <% if b.dispatched? && b.all_delivered? %><%= button_to "Confirm delivery", confirm_delivery_admin_booking_path(b), method: :patch, class: "btn btn-success" %><% end %>
+        <% if b.disputed? %><%= button_to "Resolve dispute", resolve_dispute_admin_booking_path(b), method: :patch, class: "btn btn-success" %><% end %>
+        <% [[:cancel, "Cancel booking…", "Cancellation reason (full refund + credit note)", Booking::CANCELLABLE.include?(b.aasm.current_state)],
+            [:dispute, "Mark disputed…", "Dispute reason (blocks vendor balance payouts)", %w[in_fulfilment partially_dispatched dispatched delivered].include?(b.status)]].each do |action, label, prompt, show| %>
+          <% next unless show %>
+          <div data-controller="dropdown" class="relative">
+            <button type="button" class="btn btn-ghost text-rani-600" data-action="dropdown#toggle"><%= label %></button>
+            <div class="absolute right-0 z-20 mt-2 hidden w-80 rounded-2xl bg-white p-4 shadow-2xl ring-1 ring-slate-200" data-dropdown-target="menu">
+              <%= form_with url: send("#{action}_admin_booking_path", b), method: :patch do |f| %>
+                <%= f.label :reason, prompt, class: "label" %><%= f.text_area :reason, rows: 3, required: true, class: "input" %>
+                <%= f.submit label.delete("…"), class: "btn btn-danger mt-3 w-full" %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+  <% steps = [["Submitted", b.submitted_at], ["Paid", b.paid_at], ["Assigned", b.assignments.minimum(:created_at)], ["Confirmed", b.confirmed_at], ["Dispatched", b.assignments.maximum(:dispatched_at)], ["Delivered", b.delivered_at], ["Completed", b.completed_at]] %>
+  <ol class="grid grid-cols-7 border-t border-slate-100 text-center text-[11px] font-semibold sm:text-xs">
+    <% steps.each_with_index do |(label, at), i| %>
+      <li class="px-1 py-3 <%= at ? 'text-plum-900' : 'text-slate-400' %>">
+        <span class="mx-auto mb-1 grid h-6 w-6 place-items-center rounded-full <%= at ? 'bg-gradient-to-br from-saffron-500 to-rani-500 text-white' : 'bg-slate-100' %>"><%= at ? icon("check", class: "h-3.5 w-3.5", stroke: 3) : i + 1 %></span>
+        <%= label %><span class="block font-normal text-slate-400"><%= at&.strftime("%d %b") %></span>
+      </li>
+    <% end %>
+  </ol>
+  <% if b.cancelled? || b.disputed? || b.pending_approval? %>
+    <div class="rounded-b-2xl border-t px-6 py-3 text-sm <%= b.pending_approval? ? 'border-amber-100 bg-amber-50 text-amber-800' : 'border-rani-100 bg-rani-50 text-rani-700' %>">
+      <%= b.cancelled? ? "Cancelled: #{b.cancel_reason}" : b.disputed? ? "Disputed: #{b.dispute_reason}" : "Waiting for an HR admin at #{b.company.name} to approve (above their #{inr(b.company.approval_limit_paise)} approval limit)." %>
+    </div>
+  <% end %>
+</div>
+
+<div class="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+  <%= render Ui::StatCardComponent.new(label: "HR total (incl. GST)", value: inr(b.total_paise), icon: "rupee", tone: :orange, hint: "#{inr(b.unit_price_paise)} per kit · paid #{inr(b.paid_paise)}") %>
+  <%= render Ui::StatCardComponent.new(label: "Vendor cost", value: inr(b.vendor_subtotal_paise), icon: "banknotes", tone: :purple, hint: "#{b.live_assignments.count} assignment(s)") %>
+  <%= render Ui::StatCardComponent.new(label: "Gross margin", value: b.margin_paise ? inr(b.margin_paise) : "—", icon: "trending-up", tone: :green, hint: b.margin_paise ? "#{(b.margin_paise * 100.0 / b.hr_subtotal_paise).round(1)}% of subtotal" : "After assignment") %>
+  <%= render Ui::StatCardComponent.new(label: "Delivered", value: "#{b.recipients.where(status: 'delivered').count} / #{b.quantity}", icon: "truck", tone: :blue, hint: "#{b.recipients.where(status: 'dispatched').count} in transit") %>
+</div>
+
+<% if @candidates %>
+  <div class="card mb-6 ring-2 ring-saffron-200">
+    <div class="flex flex-col gap-1 border-b border-slate-100 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <div><h2 class="font-semibold text-slate-900">Manual assignment — vendor comparison</h2><p class="text-xs text-slate-500"><%= pluralize(b.unassigned_recipients.count, "recipient") %> unassigned: <%= @unassigned_states.map { |s, c| "#{s} (#{c})" }.join(", ") %>. Split by state or quantity to use several vendors.</p></div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="table">
+        <thead><tr><th>Vendor</th><th class="text-right">Price</th><th class="text-right">Margin</th><th class="text-right">Cap. left</th><th class="text-right">Lead</th><th>Rating</th><th>Checks</th><th class="w-80">Assign</th></tr></thead>
+        <tbody>
+          <% @candidates.each do |c| %>
+            <tr class="<%= c.eligible? ? 'bg-emerald-50/30' : '' %>">
+              <td><%= link_to c.vendor.name, admin_vendor_path(c.vendor), class: "font-semibold hover:text-saffron-700" %><span class="block text-xs text-slate-400"><%= c.offer.payment_policy %></span></td>
+              <td class="text-right tabular-nums"><%= inr(c.offer.vendor_price_paise) %></td>
+              <td class="text-right tabular-nums text-emerald-700"><%= inr(c.margin_paise) %></td>
+              <td class="text-right"><%= c.remaining_capacity %></td>
+              <td class="text-right"><%= c.offer.lead_time_days %>d</td>
+              <td><%= c.vendor.rating.to_f %></td>
+              <td>
+                <div class="flex flex-wrap gap-1">
+                  <% c.checks.each do |k, ok| %><span class="rounded-md px-1.5 py-0.5 text-[10px] font-semibold <%= ok ? 'bg-emerald-50 text-emerald-700' : 'bg-rani-50 text-rani-700' %>" title="<%= Assignment::Eligibility::LABELS[k] %>"><%= ok ? "✓" : "✗" %> <%= k.to_s.humanize %></span><% end %>
+                </div>
+              </td>
+              <td>
+                <% if c.vendor.approved? && c.offer.active? && policy(b).manual_assign? %>
+                  <%= form_with url: manual_assign_admin_booking_path(b), class: "flex items-center gap-2" do |f| %>
+                    <%= hidden_field_tag :vendor_offer_id, c.offer.id %>
+                    <%= select_tag :state, options_for_select(@unassigned_states.keys), include_blank: "All states", class: "input py-1.5 text-xs", aria: { label: "State" } %>
+                    <%= number_field_tag :quantity, nil, min: 1, placeholder: "Qty", class: "input w-20 py-1.5 text-xs", aria: { label: "Quantity" } %>
+                    <%= f.submit "Assign", class: "btn btn-dark btn-sm" %>
+                  <% end %>
+                <% else %><span class="text-xs text-slate-400">Not available</span><% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% end %>
+
+<div class="grid gap-6 lg:grid-cols-3">
+  <div class="space-y-6 lg:col-span-2">
+    <div class="card">
+      <div class="border-b border-slate-100 px-6 py-4"><h2 class="font-semibold text-slate-900">Assignments</h2></div>
+      <% if @assignments.any? %>
+        <ul class="divide-y divide-slate-100">
+          <% @assignments.each do |a| %>
+            <li class="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center">
+              <div class="flex-1">
+                <div class="flex flex-wrap items-center gap-2"><%= link_to a.vendor.name, admin_vendor_path(a.vendor), class: "font-semibold text-slate-900 hover:text-saffron-700" %><%= status_badge(:assignment, a.status, a.status_label) %><span class="text-xs text-slate-400"><%= a.mode %></span></div>
+                <p class="text-xs text-slate-500"><%= a.quantity %> kits × <%= inr(a.vendor_unit_price_paise) %> = <strong><%= inr(a.vendor_total_paise) %></strong> · <%= a.advance_pct %>% advance · <%= a.balance_terms == "credit" ? "#{a.credit_days}d credit" : "balance on delivery" %></p>
+                <% if a.offered? %><p class="text-xs <%= a.expires_at.past? ? 'font-semibold text-rani-600' : 'text-amber-700' %>"><%= a.expires_at.past? ? "SLA breached #{time_ago_in_words(a.expires_at)} ago" : "Vendor must respond within #{distance_of_time_in_words(Time.current, a.expires_at)}" %></p><% end %>
+                <% if a.rejection_reason.present? %><p class="text-xs text-rani-600"><%= a.rejection_reason %></p><% end %>
+                <% if a.payouts.any? %><p class="mt-1 flex flex-wrap gap-2"><% a.payouts.each do |po| %><%= link_to admin_payout_path(po), class: "text-xs" do %><%= po.kind.capitalize %> <%= inr(po.amount_paise) %> <%= status_badge(:payout, po.status) %><% end %><% end %></p><% end %>
+              </div>
+              <div class="flex gap-2">
+                <%= link_to "Details", admin_assignment_path(a), class: "btn btn-secondary btn-sm" %>
+                <% if a.offered? && policy(a).expire? %><%= button_to "Expire", expire_admin_assignment_path(a), method: :patch, class: "btn btn-ghost btn-sm text-rani-600", form: { data: { turbo_confirm: "Expire this offer and release capacity?" } } %><% end %>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %><div class="p-6"><%= render Ui::EmptyStateComponent.new(title: "Not assigned yet", body: b.assigning? ? "Use auto-assign or pick a vendor above." : "Assignment starts once the booking is paid.", icon: "switch") %></div><% end %>
+    </div>
+
+    <div class="card">
+      <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4"><h2 class="font-semibold text-slate-900">Recipients (<%= @recipients.size %>)</h2></div>
+      <div class="max-h-[32rem] overflow-y-auto">
+        <table class="table">
+          <thead class="sticky top-0"><tr><th>Recipient</th><th>Location</th><th>Size</th><th>Vendor</th><th>Tracking</th><th>Status</th></tr></thead>
+          <tbody>
+            <% @recipients.each do |r| %>
+              <tr>
+                <td><p class="font-medium text-slate-900"><%= r.name %></p><p class="max-w-[16rem] truncate text-xs text-slate-400"><%= r.card_message %></p></td>
+                <td class="text-xs"><%= r.city %>, <%= r.state %> <span class="font-mono"><%= r.pincode %></span></td>
+                <td><%= r.tshirt_size || "—" %></td>
+                <td class="text-xs"><%= r.assignment&.vendor&.name || "—" %></td>
+                <td class="text-xs"><% if r.awb %><%= link_to "#{r.courier} #{r.awb}", r.tracking_url, target: "_blank", rel: "noopener", class: "text-saffron-600 hover:underline" %><% else %>—<% end %></td>
+                <td><%= status_badge(:recipient, r.status) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="space-y-6">
+    <div class="card card-body">
+      <h2 class="font-semibold text-slate-900">Price breakdown</h2>
+      <dl class="mt-4 space-y-2 text-sm">
+        <% [["#{b.quantity} × #{inr(b.unit_price_paise)}", b.hr_subtotal_paise], ["Delivery", b.delivery_charge_paise]].each do |l, v| %><div class="flex justify-between"><dt class="text-slate-500"><%= l %></dt><dd class="tabular-nums"><%= inr(v) %></dd></div><% end %>
+        <% if b.igst_paise.positive? %>
+          <div class="flex justify-between"><dt class="text-slate-500">IGST @ <%= b.gst_rate.to_f %>%</dt><dd class="tabular-nums"><%= inr(b.igst_paise) %></dd></div>
+        <% else %>
+          <div class="flex justify-between"><dt class="text-slate-500">CGST @ <%= (b.gst_rate / 2).to_f %>%</dt><dd class="tabular-nums"><%= inr(b.cgst_paise) %></dd></div>
+          <div class="flex justify-between"><dt class="text-slate-500">SGST @ <%= (b.gst_rate / 2).to_f %>%</dt><dd class="tabular-nums"><%= inr(b.sgst_paise) %></dd></div>
+        <% end %>
+        <div class="flex justify-between border-t border-slate-100 pt-2 font-semibold text-plum-900"><dt>Total</dt><dd class="tabular-nums"><%= inr(b.total_paise) %></dd></div>
+      </dl>
+      <% if @ledger.any? %>
+        <p class="mt-5 text-xs font-semibold uppercase tracking-wide text-slate-400">Ledger (on completion)</p>
+        <dl class="mt-2 space-y-1.5 text-sm">
+          <% @ledger.each do |acct, e| %><div class="flex justify-between"><dt class="text-slate-500"><%= acct.humanize %></dt><dd class="tabular-nums"><%= inr(e.amount_paise) %></dd></div><% end %>
+        </dl>
+      <% end %>
+    </div>
+
+    <div class="card card-body">
+      <h2 class="font-semibold text-slate-900">Payments</h2>
+      <% @payments.each do |p| %>
+        <%= link_to admin_payment_path(p), class: "mt-3 flex items-center justify-between rounded-xl px-3 py-2 ring-1 ring-slate-100 hover:bg-slate-50" do %>
+          <span><span class="block text-sm font-medium"><%= inr(p.amount_paise) %></span><span class="text-xs text-slate-500"><%= p.method_label %></span></span><%= status_badge(:payment, p.status) %>
+        <% end %>
+      <% end %>
+      <% if @payments.empty? %><p class="mt-2 text-sm text-slate-500"><%= b.company.credit? ? "Credit terms — invoiced on completion." : "No payments yet." %></p><% end %>
+    </div>
+
+    <div class="card card-body">
+      <h2 class="font-semibold text-slate-900">Documents</h2>
+      <ul class="mt-3 space-y-2 text-sm">
+        <li><%= link_to proforma_admin_booking_path(b), target: "_blank", class: "flex items-center gap-2 hover:text-saffron-700" do %><%= icon("document", class: "h-4 w-4 text-slate-400") %> Proforma PF-<%= b.number %><% end %></li>
+        <% @invoices.each do |inv| %><li><%= link_to admin_invoice_path(inv), target: "_blank", class: "flex items-center gap-2 hover:text-saffron-700" do %><%= icon("receipt", class: "h-4 w-4 text-slate-400") %> <%= inv.kind_label %> <%= inv.number %> · <%= inr(inv.total_paise) %><% end %></li><% end %>
+        <% b.live_assignments.each do |a| %>
+          <li><%= link_to packing_list_admin_assignment_path(a), target: "_blank", class: "flex items-center gap-2 hover:text-saffron-700" do %><%= icon("clipboard", class: "h-4 w-4 text-slate-400") %> Packing list · <%= a.vendor.name %><% end %></li>
+          <li><%= link_to labels_admin_assignment_path(a), target: "_blank", class: "flex items-center gap-2 hover:text-saffron-700" do %><%= icon("tag", class: "h-4 w-4 text-slate-400") %> Address labels · <%= a.vendor.name %><% end %></li>
+        <% end %>
+      </ul>
+    </div>
+
+    <div class="card card-body">
+      <h2 class="font-semibold text-slate-900">Tickets</h2>
+      <% @tickets.each do |t| %>
+        <%= link_to admin_ticket_path(t), class: "mt-3 block rounded-xl px-3 py-2 ring-1 ring-slate-100 hover:bg-slate-50" do %>
+          <span class="flex items-center justify-between gap-2"><span class="truncate text-sm font-medium"><%= t.subject %></span><%= status_badge(:ticket, t.status) %></span>
+        <% end %>
+      <% end %>
+      <% if @tickets.empty? %><p class="mt-2 text-sm text-slate-500">No issues raised.</p><% end %>
+    </div>
+
+    <div class="card card-body">
+      <h2 class="font-semibold text-slate-900">Status history</h2>
+      <ol class="mt-3 space-y-2 text-xs">
+        <% @versions.each do |v| %>
+          <% ch = audit_changes(v)["status"] %>
+          <% next unless ch || v.event == "create" %>
+          <li class="flex justify-between gap-2"><span><%= v.event == "create" ? "Created" : "#{Booking::STATUS_LABELS[ch[0]]} → #{Booking::STATUS_LABELS[ch[1]]}" %></span><span class="text-slate-400"><%= v.created_at.strftime("%d %b %H:%M") %></span></li>
+        <% end %>
+      </ol>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+<% page_title "Companies" %>
+<%= render Ui::PageHeaderComponent.new(title: "Companies", subtitle: "Client companies on the platform.", eyebrow: "Sales") %>
+<%= form_with url: admin_companies_path, method: :get, class: "mb-5 max-w-md" do |f| %>
+  <div class="relative"><span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400"><%= icon("search", class: "h-4 w-4") %></span><%= f.search_field :q, value: params[:q], placeholder: "Search by name or GSTIN…", class: "input pl-9", aria: { label: "Search companies" } %></div>
+<% end %>
+<% if @companies.any? %>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>Company</th><th>GSTIN</th><th>State</th><th>Terms</th><th class="text-right">Users</th><th>Status</th><th>Created</th></tr></thead>
+      <tbody>
+        <% @companies.each do |c| %>
+          <tr>
+            <td><%= link_to admin_company_path(c), class: "flex items-center gap-3" do %><span class="grid h-9 w-9 place-items-center rounded-xl bg-plum-50 text-xs font-bold text-plum-700"><%= c.name.first(2).upcase %></span><span class="font-semibold text-slate-900"><%= c.name %></span><% end %></td>
+            <td class="font-mono text-xs"><%= c.gstin || "—" %></td>
+            <td><%= c.state || "—" %></td>
+            <td><%= render Ui::BadgeComponent.new(text: c.payment_terms.humanize, tone: c.payment_terms == "credit" ? :purple : :blue, dot: false) %></td>
+            <td class="text-right"><%= @user_counts[c.id].to_i %></td>
+            <td><%= active_badge(c.active) %></td>
+            <td class="text-xs text-slate-500"><%= c.created_at.strftime("%d %b %Y") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <%= pagy_nav_tw(@pagy) %>
+<% else %>
+  <%= render Ui::EmptyStateComponent.new(title: "No companies yet", body: "Convert a won lead to create your first company.", icon: "building") %>
+<% end %>

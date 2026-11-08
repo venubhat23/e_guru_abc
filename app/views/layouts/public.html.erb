@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head><%= render "shared/head" %></head>
+  <body class="bg-cream-50 text-slate-800" data-controller="traffic" data-traffic-url-value="<%= site_events_path %>">
+    <%= render "shared/flash" %>
+    <%= render "public/navbar" %>
+    <main><%= yield %></main>
+    <%= render "public/footer" %>
+  </body>
+</html>

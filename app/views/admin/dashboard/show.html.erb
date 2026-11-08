@@ -1,0 +1,69 @@
+<% page_title "Dashboard" %>
+<div class="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-br from-plum-900 via-plum-800 to-rani-700 p-6 text-white shadow-xl sm:p-8">
+  <div class="absolute inset-0 pattern-grid-dark"></div>
+  <div class="absolute -right-10 -top-10 h-56 w-56 rounded-full bg-saffron-500/30 blur-3xl"></div>
+  <div class="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+    <div>
+      <p class="text-sm font-medium text-plum-200">Good <%= Time.current.hour < 12 ? "morning" : (Time.current.hour < 17 ? "afternoon" : "evening") %>,</p>
+      <h1 class="mt-1 font-display text-3xl font-semibold sm:text-4xl"><%= current_user.first_name %> ✨</h1>
+      <p class="mt-2 max-w-xl text-sm text-plum-200">
+        <strong class="text-white"><%= @stats[:manual_queue] %></strong> bookings waiting for assignment ·
+        <strong class="text-white"><%= @stats[:overdue_slas] %></strong> overdue vendor SLAs ·
+        <strong class="text-white"><%= @stats[:pending_payments] %></strong> offline payments to verify ·
+        <strong class="text-white"><%= @stats[:leads_new_week] %></strong> new leads this week
+      </p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <%= link_to admin_bookings_path(status: "assigning"), class: "btn bg-white text-plum-900 hover:-translate-y-0.5" do %><%= icon("switch", class: "h-4 w-4") %> Assignment queue<% end %>
+      <%= link_to admin_payments_path(queue: "offline"), class: "btn bg-white/15 text-white ring-1 ring-white/30 hover:bg-white/25" do %><%= icon("rupee", class: "h-4 w-4") %> Verify payments<% end %>
+    </div>
+  </div>
+</div>
+
+<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+  <%= render Ui::StatCardComponent.new(label: "GMV (excl. GST)", value: inr(@stats[:gmv]), icon: "rupee", tone: :orange, hint: "Paid & in-progress bookings", href: admin_report_path("gmv_by_month")) %>
+  <%= render Ui::StatCardComponent.new(label: "Gross profit", value: inr(@stats[:gross_profit]), icon: "trending-up", tone: :green, hint: "Revenue posted on completion") %>
+  <%= render Ui::StatCardComponent.new(label: "Net contribution", value: inr(@stats[:net_contribution]), icon: "sparkles", tone: :purple, hint: "After marketing reserve & gateway fees") %>
+  <%= render Ui::StatCardComponent.new(label: "Marketing reserve", value: inr(@stats[:marketing_reserve]), icon: "heart", tone: :pink, hint: "#{Setting[:marketing_reserve_pct]}% of vendor cost") %>
+  <%= render Ui::StatCardComponent.new(label: "Receivables", value: inr(@stats[:receivables]), icon: "inbox", tone: :blue, hint: "Unpaid on open bookings", href: admin_payments_path) %>
+  <%= render Ui::StatCardComponent.new(label: "Payables to vendors", value: inr(@stats[:payables]), icon: "banknotes", tone: :orange, hint: "#{@stats[:overdue_payouts]} overdue", href: admin_payouts_path) %>
+  <%= render Ui::StatCardComponent.new(label: "Overdue SLAs", value: @stats[:overdue_slas], icon: "clock", tone: :pink, hint: "Vendor hasn't responded in time", href: admin_assignments_path(sla: "breached")) %>
+  <%= render Ui::StatCardComponent.new(label: "Open tickets", value: @stats[:open_tickets], icon: "ticket", tone: :purple, hint: "#{@stats[:vendors_pending]} vendor applications pending", href: admin_tickets_path) %>
+</div>
+
+<div class="mt-6 grid gap-6 lg:grid-cols-3">
+  <div class="card card-body lg:col-span-2">
+    <div class="flex items-center justify-between"><h2 class="font-semibold text-slate-900">GMV vs gross profit</h2><span class="text-xs text-slate-500">Last 6 months · ₹</span></div>
+    <div class="mt-4"><%= column_chart [{ name: "GMV", data: @gmv_by_month }, { name: "Gross profit", data: @margin_by_month }], colors: ["#f96a12", "#10b981"], height: "280px", prefix: "₹", thousands: ",", legend: "bottom" %></div>
+  </div>
+  <div class="card card-body">
+    <h2 class="font-semibold text-slate-900">Bookings by status</h2>
+    <div class="mt-4"><%= pie_chart @bookings_by_status, donut: true, height: "280px", legend: "bottom", colors: %w[#94a3b8 #f5ab00 #fbbf24 #38bdf8 #f96a12 #7b4fa8 #0ea5e9 #9a71c4 #f06aa4 #e33d82 #10b981 #059669 #cbd5e1 #ef4444] %></div>
+  </div>
+</div>
+
+<div class="mt-6 grid gap-6 lg:grid-cols-3">
+  <div class="card lg:col-span-2">
+    <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4"><h2 class="font-semibold text-slate-900">Needs attention</h2><%= link_to "Bookings inbox →", admin_bookings_path(status: "open"), class: "text-sm font-semibold text-saffron-600" %></div>
+    <% if @attention.any? %>
+      <ul class="divide-y divide-slate-100">
+        <% @attention.each do |b| %>
+          <li><%= link_to admin_booking_path(b), class: "flex items-center gap-4 px-6 py-3.5 transition hover:bg-saffron-50/50" do %>
+            <span class="font-mono text-sm font-semibold text-plum-900"><%= b.number %></span>
+            <span class="min-w-0 flex-1 truncate text-sm text-slate-600"><%= b.company.name %> · <%= b.bookable_name %> · <%= b.quantity %> kits</span>
+            <%= booking_badge(b) %>
+          <% end %></li>
+        <% end %>
+      </ul>
+    <% else %><div class="p-6"><%= render Ui::EmptyStateComponent.new(title: "All clear", body: "No bookings need ops attention.", icon: "check-circle") %></div><% end %>
+  </div>
+  <div class="card card-body">
+    <div class="flex items-center justify-between"><h2 class="font-semibold text-slate-900">New leads</h2><%= link_to "CRM →", admin_leads_path, class: "text-sm font-semibold text-saffron-600" %></div>
+    <ul class="mt-3 space-y-2">
+      <% @recent_leads.each do |lead| %>
+        <li><%= link_to admin_lead_path(lead), class: "flex items-center justify-between gap-2 rounded-xl px-3 py-2 hover:bg-slate-50" do %><span class="min-w-0"><span class="block truncate text-sm font-medium"><%= lead.company_name %></span><span class="text-xs text-slate-500"><%= lead.occasion&.name %> · <%= lead.employee_count %> emp</span></span><%= lead_status_badge(lead) %><% end %></li>
+      <% end %>
+    </ul>
+    <p class="mt-4 text-xs text-slate-500"><%= @stats[:follow_ups_due] %> follow-ups due</p>
+  </div>
+</div>

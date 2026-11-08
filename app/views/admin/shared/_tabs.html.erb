@@ -1,0 +1,14 @@
+<%# locals: (tabs:, param: :status, path_helper:, counts: {}, all_label: "All", all_value: nil) %>
+<div class="mb-5 flex gap-2 overflow-x-auto pb-1">
+  <% current = params[param].presence %>
+  <%= link_to send(path_helper, request.query_parameters.except(param.to_s, "page").merge(all_value ? { param => all_value } : {})),
+        class: "flex shrink-0 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition #{current == all_value ? 'bg-plum-900 text-white shadow' : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50'}" do %>
+    <%= all_label %><% if counts.any? && all_value.nil? %> <span class="rounded-md bg-black/10 px-1.5 text-xs"><%= counts.values.sum %></span><% end %>
+  <% end %>
+  <% tabs.each do |key, label| %>
+    <%= link_to send(path_helper, request.query_parameters.except("page").merge(param => key)),
+          class: "flex shrink-0 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition #{current == key ? 'bg-plum-900 text-white shadow' : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50'}" do %>
+      <%= label %><% if counts.key?(key) %> <span class="rounded-md bg-black/10 px-1.5 text-xs"><%= counts[key] %></span><% end %>
+    <% end %>
+  <% end %>
+</div>

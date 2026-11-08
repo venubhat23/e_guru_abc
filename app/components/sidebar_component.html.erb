@@ -1,0 +1,76 @@
+<aside class="relative flex h-full w-72 flex-col overflow-hidden <%= theme[:bg] %>">
+  <div class="pointer-events-none absolute inset-x-0 top-0 h-64 bg-gradient-to-b <%= theme[:glow] %>"></div>
+  <div class="pointer-events-none absolute inset-0 pattern-grid-dark opacity-60"></div>
+
+  <div class="relative flex items-center gap-3 px-6 pt-6 pb-5">
+    <span class="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br <%= theme[:accent] %> text-white shadow-lg ring-1 ring-white/20">
+      <%= icon("gift", class: "h-5 w-5", stroke: 2) %>
+    </span>
+    <div class="min-w-0">
+      <p class="font-display text-lg font-semibold leading-tight text-white">Avighna eGiftMitra</p>
+      <p class="text-[11px] font-semibold uppercase tracking-[0.18em] <%= theme[:muted] %>"><%= theme[:tag] %></p>
+    </div>
+    <button type="button" class="ml-auto rounded-lg p-1.5 text-white/60 hover:bg-white/10 lg:hidden" data-action="sidebar#close" aria-label="Close menu">
+      <%= icon("x", class: "h-5 w-5") %>
+    </button>
+  </div>
+
+  <% if tenant_name.present? %>
+    <div class="relative mx-4 mb-3 flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2.5 ring-1 ring-white/10">
+      <span class="grid h-8 w-8 place-items-center rounded-lg bg-white/10 text-xs font-bold text-white"><%= tenant_name.to_s.first(2).upcase %></span>
+      <div class="min-w-0">
+        <p class="truncate text-sm font-semibold text-white"><%= tenant_name %></p>
+        <p class="text-[11px] <%= theme[:muted] %>"><%= user.role_label %></p>
+      </div>
+    </div>
+  <% end %>
+
+  <nav class="relative flex-1 space-y-6 overflow-y-auto px-3 pb-6 pt-2 [scrollbar-width:thin]" aria-label="Main">
+    <% sections.each do |section| %>
+      <div>
+        <% if section[:title] %>
+          <p class="px-3 pb-2 text-[11px] font-semibold uppercase tracking-[0.16em] <%= theme[:muted] %>"><%= section[:title] %></p>
+        <% end %>
+        <ul class="space-y-1">
+          <% section[:items].each do |item| %>
+            <li>
+              <% if item[:soon] %>
+                <span class="flex cursor-default items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium <%= theme[:text] %> opacity-45" title="Coming in a later phase">
+                  <%= icon(item[:icon], class: "h-5 w-5 shrink-0") %>
+                  <span class="truncate"><%= item[:label] %></span>
+                  <span class="ml-auto rounded-md bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide">Soon</span>
+                </span>
+              <% elsif active?(item) %>
+                <%= link_to item[:path], class: "group relative flex items-center gap-3 rounded-xl bg-white/10 px-3 py-2 text-sm font-semibold text-white shadow-inner ring-1 ring-white/10", aria: { current: "page" } do %>
+                  <span class="absolute -left-3 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b <%= theme[:accent] %>"></span>
+                  <span class="grid h-7 w-7 place-items-center rounded-lg bg-gradient-to-br <%= theme[:accent] %> text-white shadow"><%= icon(item[:icon], class: "h-4 w-4", stroke: 2) %></span>
+                  <span class="truncate"><%= item[:label] %></span>
+                  <% if item[:badge].to_i.positive? %><span class="ml-auto rounded-full bg-white px-2 py-0.5 text-[11px] font-bold text-plum-900"><%= item[:badge] %></span><% end %>
+                <% end %>
+              <% else %>
+                <%= link_to item[:path], class: "group flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium #{theme[:text]} #{theme[:hover]} transition" do %>
+                  <span class="grid h-7 w-7 place-items-center rounded-lg bg-white/5 text-white/80 ring-1 ring-white/10 transition group-hover:bg-white/10"><%= icon(item[:icon], class: "h-4 w-4") %></span>
+                  <span class="truncate"><%= item[:label] %></span>
+                  <% if item[:badge].to_i.positive? %><span class="ml-auto rounded-full bg-gradient-to-r <%= theme[:accent] %> px-2 py-0.5 text-[11px] font-bold text-white"><%= item[:badge] %></span><% end %>
+                <% end %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  </nav>
+
+  <div class="relative border-t border-white/10 p-4">
+    <div class="flex items-center gap-3">
+      <span class="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br <%= theme[:accent] %> text-sm font-bold text-white ring-2 ring-white/20"><%= user.initials %></span>
+      <div class="min-w-0 flex-1">
+        <p class="truncate text-sm font-semibold text-white"><%= user.name %></p>
+        <p class="truncate text-xs <%= theme[:muted] %>"><%= user.email_address %></p>
+      </div>
+      <%= button_to helpers.session_path, method: :delete, class: "rounded-lg p-2 text-white/60 transition hover:bg-white/10 hover:text-white", title: "Sign out", form: { data: { turbo_confirm: "Sign out of Avighna eGiftMitra?" } } do %>
+        <%= icon("logout", class: "h-5 w-5") %><span class="sr-only">Sign out</span>
+      <% end %>
+    </div>
+  </div>
+</aside>

@@ -1,0 +1,35 @@
+<% page_title "Settings" %>
+<%= render Ui::PageHeaderComponent.new(title: "Platform settings", subtitle: "Defaults used by pricing, assignment, fulfilment and the website.", eyebrow: "System") %>
+<% editable = policy(Setting).update? %>
+<%= form_with url: admin_settings_path, method: :patch, scope: :settings, class: "grid gap-6 lg:grid-cols-2" do |f| %>
+  <% groups = {
+    "Pricing" => [["default_markup_pct", "Default markup", "%", "Applied when no company/product/category override."], ["marketing_reserve_pct", "Marketing reserve", "%", "Of vendor subtotal, on completion."], ["price_rounding_step_rupees", "Round HR prices up to nearest", "₹", nil]],
+    "Assignment & fulfilment" => [["assignment_mode", "Assignment mode", nil, "auto or manual"], ["assignment_sla_hours", "Vendor accept SLA", "hours", nil], ["manual_assignment_qty_threshold", "Manual review above quantity", "kits", nil], ["auto_confirm_days", "Auto-confirm delivery after", "days", nil]],
+    "Contact & notifications" => [["support_email", "Support email", nil, nil], ["support_phone", "Support phone", nil, nil], ["lead_notification_emails", "Extra lead alert emails", nil, "Comma separated"]]
+  } %>
+  <% groups.each do |group, fields| %>
+    <div class="card card-body">
+      <h2 class="font-semibold text-slate-900"><%= group %></h2>
+      <div class="mt-4 space-y-4">
+        <% fields.each do |key, label, unit, hint| %>
+          <div>
+            <%= f.label key, label, class: "label" %>
+            <% if key == "assignment_mode" %>
+              <%= f.select key, [["Auto", "auto"], ["Manual", "manual"]], { selected: @values[key] }, class: "input", disabled: !editable %>
+            <% else %>
+              <div class="relative">
+                <%= f.text_field key, value: Array(@values[key]).join(", ").presence || @values[key], class: "input #{'pr-16' if unit}", disabled: !editable %>
+                <% if unit %><span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs font-semibold text-slate-400"><%= unit %></span><% end %>
+              </div>
+            <% end %>
+            <% if hint %><p class="hint"><%= hint %></p><% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+  <div class="card card-body flex flex-col justify-between bg-gradient-to-br from-plum-900 to-plum-700 text-white ring-0">
+    <div><h2 class="font-semibold">Changes are audited</h2><p class="mt-1 text-sm text-plum-200">Every settings change is recorded in the audit log with who changed what.</p></div>
+    <% if editable %><%= f.submit "Save settings", class: "btn mt-6 bg-white text-plum-900" %><% else %><p class="mt-6 text-sm text-plum-200">Only super admins can change settings.</p><% end %>
+  </div>
+<% end %>

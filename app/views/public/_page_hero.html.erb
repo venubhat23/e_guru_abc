@@ -1,0 +1,10 @@
+<%# locals: (eyebrow:, title:, subtitle: nil) %>
+<section class="relative overflow-hidden pt-32 pb-14 sm:pt-40">
+  <div class="absolute inset-0 pattern-dots opacity-50"></div>
+  <div class="absolute -top-20 right-0 h-96 w-96 rounded-full bg-gradient-to-br from-marigold-300/40 to-rani-300/40 blur-3xl"></div>
+  <div class="relative mx-auto max-w-4xl px-6 text-center animate-fade-up">
+    <p class="text-sm font-semibold uppercase tracking-widest text-saffron-600"><%= eyebrow %></p>
+    <h1 class="mt-3 font-display text-4xl font-semibold tracking-tight text-plum-950 sm:text-6xl"><%= title %></h1>
+    <% if subtitle %><p class="mx-auto mt-5 max-w-2xl text-lg text-slate-600"><%= subtitle %></p><% end %>
+  </div>
+</section>

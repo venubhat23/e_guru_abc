@@ -1,0 +1,80 @@
+<%# locals: (portal:, sections:, tenant_name: nil, accent: "from-saffron-500 to-rani-500") %>
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head><%= render "shared/head" %></head>
+  <body class="h-full bg-[#f7f5fa]" data-controller="sidebar">
+    <%= render "shared/flash" %>
+    <div class="fixed inset-0 z-40 bg-plum-950/60 backdrop-blur-sm opacity-0 pointer-events-none transition lg:hidden" data-sidebar-target="overlay" data-action="click->sidebar#close"></div>
+    <div class="fixed inset-y-0 left-0 z-50 -translate-x-full transition-transform duration-300 lg:translate-x-0" data-sidebar-target="panel">
+      <%= render SidebarComponent.new(portal:, sections:, user: current_user, tenant_name:, current_path: request.path) %>
+    </div>
+
+    <div class="lg:pl-72">
+      <header class="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl">
+        <div class="flex h-16 items-center gap-3 px-4 sm:px-6 lg:px-8">
+          <button type="button" class="rounded-xl p-2 text-slate-600 hover:bg-slate-100 lg:hidden" data-action="sidebar#open" aria-label="Open menu">
+            <%= icon("menu", class: "h-6 w-6") %>
+          </button>
+          <div class="hidden min-w-0 flex-1 md:block">
+            <p class="truncate text-sm text-slate-500">
+              <span class="font-semibold text-slate-800"><%= content_for(:title).presence || "Dashboard" %></span>
+              <span class="mx-2 text-slate-300">/</span><%= Date.current.strftime("%A, %d %B %Y") %>
+            </p>
+          </div>
+          <div class="ml-auto flex items-center gap-2">
+            <div class="relative" data-controller="dropdown">
+              <button type="button" class="relative rounded-xl p-2.5 text-slate-600 transition hover:bg-slate-100" data-action="dropdown#toggle" aria-label="Notifications">
+                <%= icon("bell", class: "h-5 w-5") %>
+                <% if unread_notifications.any? %>
+                  <span class="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-gradient-to-r <%= accent %> px-1 text-[10px] font-bold text-white ring-2 ring-white"><%= unread_notifications.size %></span>
+                <% end %>
+              </button>
+              <div class="absolute right-0 mt-2 hidden w-80 origin-top-right overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-slate-200" data-dropdown-target="menu">
+                <div class="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+                  <p class="text-sm font-semibold text-slate-900">Notifications</p>
+                  <% if unread_notifications.any? %><%= button_to "Mark all read", read_all_notifications_path, class: "text-xs font-semibold text-saffron-600 hover:underline" %><% end %>
+                </div>
+                <div class="max-h-96 overflow-y-auto">
+                  <% if unread_notifications.any? %>
+                    <% unread_notifications.each do |n| %>
+                      <%= link_to notification_path(n), class: "flex gap-3 px-4 py-3 hover:bg-saffron-50/60", data: { turbo: false } do %>
+                        <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-gradient-to-r <%= accent %>"></span>
+                        <span class="min-w-0">
+                          <span class="block truncate text-sm font-medium text-slate-800"><%= n.title %></span>
+                          <% if n.body.present? %><span class="block truncate text-xs text-slate-500"><%= n.body %></span><% end %>
+                          <span class="mt-0.5 block text-[11px] text-slate-400"><%= time_ago(n.created_at) %></span>
+                        </span>
+                      <% end %>
+                    <% end %>
+                  <% else %>
+                    <div class="px-4 py-10 text-center text-sm text-slate-500">
+                      <%= icon("check-circle", class: "mx-auto mb-2 h-8 w-8 text-emerald-500") %> You're all caught up!
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+            <div class="relative" data-controller="dropdown">
+              <button type="button" class="flex items-center gap-2 rounded-xl py-1.5 pl-1.5 pr-2.5 transition hover:bg-slate-100" data-action="dropdown#toggle">
+                <span class="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br <%= accent %> text-xs font-bold text-white"><%= current_user.initials %></span>
+                <span class="hidden text-sm font-semibold text-slate-700 sm:block"><%= current_user.first_name %></span>
+                <%= icon("chevron-down", class: "h-4 w-4 text-slate-400") %>
+              </button>
+              <div class="absolute right-0 mt-2 hidden w-56 overflow-hidden rounded-2xl bg-white py-1 shadow-2xl ring-1 ring-slate-200" data-dropdown-target="menu">
+                <div class="border-b border-slate-100 px-4 py-3">
+                  <p class="truncate text-sm font-semibold text-slate-900"><%= current_user.name %></p>
+                  <p class="truncate text-xs text-slate-500"><%= current_user.role_label %></p>
+                </div>
+                <%= link_to root_path, class: "flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50" do %><%= icon("globe", class: "h-4 w-4") %> View website<% end %>
+                <%= button_to session_path, method: :delete, class: "flex w-full items-center gap-2 px-4 py-2.5 text-sm text-rani-600 hover:bg-rani-50" do %><%= icon("logout", class: "h-4 w-4") %> Sign out<% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      <main class="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+        <div class="mx-auto max-w-7xl"><%= yield %></div>
+      </main>
+    </div>
+  </body>
+</html>

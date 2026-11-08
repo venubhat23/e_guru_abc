@@ -1,0 +1,47 @@
+<footer class="relative overflow-hidden bg-plum-950 text-plum-200">
+  <div class="absolute inset-0 pattern-grid-dark"></div>
+  <div class="absolute -right-40 -top-40 h-96 w-96 rounded-full bg-rani-600/20 blur-3xl"></div>
+  <div class="relative mx-auto max-w-7xl px-6 pb-10 pt-16">
+    <div class="grid gap-12 lg:grid-cols-12">
+      <div class="lg:col-span-4">
+        <%= link_to root_path, class: "flex items-center gap-2.5" do %>
+          <span class="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-saffron-500 to-rani-500 text-white"><%= icon("gift", class: "h-5 w-5", stroke: 2) %></span>
+          <span class="font-display text-xl font-semibold text-white">Avighna eGiftMitra</span>
+        <% end %>
+        <p class="mt-4 max-w-sm text-sm leading-relaxed">Managed corporate gifting for Indian companies. Curated packages, verified vendors, doorstep delivery to every employee and GST-compliant invoices — all from one dashboard.</p>
+        <div class="mt-6 space-y-2 text-sm">
+          <p class="flex items-center gap-2"><%= icon("mail", class: "h-4 w-4 text-saffron-400") %> <%= Setting[:support_email] %></p>
+          <p class="flex items-center gap-2"><%= icon("phone", class: "h-4 w-4 text-saffron-400") %> <%= Setting[:support_phone] %></p>
+          <p class="flex items-center gap-2"><%= icon("map-pin", class: "h-4 w-4 text-saffron-400") %> Bengaluru · Delivering across India</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:col-span-8">
+        <div>
+          <p class="text-sm font-semibold text-white">Occasions</p>
+          <ul class="mt-4 space-y-2.5 text-sm">
+            <% Occasion.active.ordered.limit(6).each do |o| %><li><%= link_to o.name, occasion_path(o), class: "hover:text-white" %></li><% end %>
+          </ul>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-white">Company</p>
+          <ul class="mt-4 space-y-2.5 text-sm">
+            <li><%= link_to "How it works", how_it_works_path, class: "hover:text-white" %></li>
+            <li><%= link_to "Contact us", new_contact_path, class: "hover:text-white" %></li>
+            <li><%= link_to "Become a vendor", vendor_signup_path, class: "hover:text-white" %></li>
+            <li><%= link_to "Sign in", new_session_path, class: "hover:text-white" %></li>
+          </ul>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-white">Legal</p>
+          <ul class="mt-4 space-y-2.5 text-sm">
+            <% LegalPage.published.order(:title).each do |p| %><li><%= link_to p.title, legal_page_path(p), class: "hover:text-white" %></li><% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-xs sm:flex-row">
+      <p>© <%= Date.current.year %> Avighna eGiftMitra. All rights reserved. Prices in INR, inclusive of applicable GST where stated.</p>
+      <p class="flex items-center gap-1">Crafted with <%= icon("heart", class: "h-3.5 w-3.5 text-rani-400") %> in India</p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,26 @@
+<%# locals: (occasion:, delay: 0) %>
+<% themes = {
+  "saffron" => "from-saffron-400 via-saffron-500 to-rani-500",
+  "rani" => "from-rani-400 via-rani-500 to-plum-600",
+  "plum" => "from-plum-500 via-plum-700 to-plum-900",
+  "emerald" => "from-emerald-400 via-teal-500 to-sky-600",
+  "sky" => "from-sky-400 via-indigo-500 to-plum-600"
+} %>
+<%= link_to occasion_path(occasion), class: "group relative flex min-h-[19rem] flex-col overflow-hidden rounded-3xl bg-gradient-to-br #{themes[occasion.theme]} p-6 text-white shadow-xl shadow-plum-900/10 transition duration-500 hover:-translate-y-2 hover:shadow-2xl", style: "transition-delay: #{delay}ms", data: { reveal_target: "item" } do %>
+  <div class="absolute -right-10 -top-10 h-44 w-44 rounded-full bg-white/15 blur-2xl transition duration-700 group-hover:scale-150"></div>
+  <div class="absolute inset-0 opacity-20 [background-image:radial-gradient(white_1px,transparent_1px)] [background-size:18px_18px]"></div>
+  <div class="relative flex items-start justify-between">
+    <span class="text-5xl drop-shadow-lg transition duration-500 group-hover:scale-110 group-hover:-rotate-6"><%= occasion.emoji %></span>
+    <% if occasion.in_season? %><span class="rounded-full bg-white/25 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide backdrop-blur">In season</span><% end %>
+  </div>
+  <div class="relative mt-auto">
+    <h3 class="font-display text-2xl font-semibold"><%= occasion.name %></h3>
+    <p class="mt-1 text-sm text-white/85"><%= occasion.tagline %></p>
+    <div class="mt-5 flex items-center justify-between rounded-2xl bg-white/15 px-4 py-3 backdrop-blur">
+      <p class="text-[11px] font-medium uppercase tracking-wide text-white/75">from
+        <span class="block text-xl font-bold normal-case tracking-normal text-white"><%= inr(occasion.from_price_paise) %></span>
+        <span class="block normal-case tracking-normal text-white/75">per employee</span></p>
+      <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-plum-900 transition group-hover:translate-x-1"><%= icon("arrow-right", class: "h-4 w-4", stroke: 2.2) %></span>
+    </div>
+  </div>
+<% end %>

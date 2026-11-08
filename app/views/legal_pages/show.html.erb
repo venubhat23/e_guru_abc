@@ -1,0 +1,18 @@
+<% page_title @page.title %>
+<% meta_description @page.summary.presence || "#{@page.title} for Avighna eGiftMitra." %>
+<%= render "public/page_hero", eyebrow: "Legal", title: @page.title, subtitle: @page.summary %>
+<section class="pb-24">
+  <div class="mx-auto grid max-w-6xl gap-10 px-6 lg:grid-cols-4">
+    <aside class="lg:col-span-1">
+      <nav class="sticky top-28 space-y-1 rounded-2xl bg-white p-3 ring-1 ring-slate-200/70" aria-label="Legal pages">
+        <% @pages.each do |p| %>
+          <%= link_to p.title, legal_page_path(p), class: "block rounded-xl px-3 py-2 text-sm font-medium #{p == @page ? 'bg-gradient-to-r from-saffron-500 to-rani-500 text-white' : 'text-slate-600 hover:bg-cream-100'}" %>
+        <% end %>
+      </nav>
+    </aside>
+    <article class="card card-body prose-legal sm:p-10 lg:col-span-3">
+      <p class="text-sm text-slate-500">Effective <%= (@page.effective_on || @page.updated_at.to_date).to_fs(:long) %> · Last updated <%= @page.updated_at.to_date.to_fs(:long) %></p>
+      <%= markdown(@page.body) %>
+    </article>
+  </div>
+</section>

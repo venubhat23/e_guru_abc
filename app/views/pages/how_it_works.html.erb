@@ -1,0 +1,29 @@
+<% page_title "How it works" %>
+<% meta_description "See how Avighna eGiftMitra handles corporate gifting end to end — choose, add recipients, pay and track doorstep delivery across India." %>
+<%= render "public/page_hero", eyebrow: "How it works", title: "Corporate gifting without the chaos", subtitle: "A single workflow for HR, finance and our fulfilment network — here's what happens at each step." %>
+<section class="pb-24" data-controller="reveal">
+  <div class="mx-auto max-w-5xl px-6">
+    <ol class="relative space-y-8 before:absolute before:left-6 before:top-4 before:h-[calc(100%-2rem)] before:w-0.5 before:bg-gradient-to-b before:from-saffron-400 before:to-plum-400 sm:before:left-8">
+      <% [
+        ["sparkles", "Choose a package or build your own", "Browse occasion packages — Diwali, New Year, Birthday, Onboarding, Festival — with transparent per-employee pricing. Or open the Unbox builder and assemble a custom box from chocolates, mugs, earphones, diaries, bottles and more.", ["Live price per box", "Logo branding on eligible items", "Personalised card messages"]],
+        ["users", "Add your recipients", "Import employees from CSV/Excel with row-level validation, pick everyone or filter by department and location. Employees can securely fill their own address and T-shirt size via a link.", ["Duplicate & pincode checks", "Saved groups", "Self-fill links"]],
+        ["calendar", "Pick delivery mode & date", "Ship to each employee's home, in bulk to selected offices, or wait for self-fill. We validate your requested date against vendor lead times.", ["Home, office or self-fill", "Lead-time checks", "Pan-India coverage"]],
+        ["receipt", "Approve the quote & pay", "Your quote shows per-kit price, quantity, delivery, and GST split as CGST+SGST or IGST by place of supply. Prices lock on submit. Pay via Razorpay or bank transfer with proof upload.", ["Proforma invoice PDF", "Approval limits for large orders", "Credit terms for eligible companies"]],
+        ["truck", "We fulfil & you track", "Verified vendors accept within the SLA, produce, QC, and dispatch with AWB numbers. You see per-recipient status, raise issues per recipient, and get a delivery report plus tax invoice at the end.", ["Real-time recipient tracking", "Issue tickets", "Tax invoice + delivery report"]]
+      ].each_with_index do |(ic, title, body, points), i| %>
+        <li class="relative pl-20 sm:pl-24" data-reveal-target="item">
+          <span class="absolute left-0 top-0 grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-saffron-500 to-rani-500 text-white shadow-lg ring-4 ring-cream-50 sm:h-16 sm:w-16"><%= icon(ic, class: "h-6 w-6 sm:h-7 sm:w-7") %></span>
+          <div class="card card-body">
+            <p class="text-xs font-semibold uppercase tracking-widest text-saffron-600">Step <%= i + 1 %></p>
+            <h2 class="mt-1 font-display text-2xl font-semibold text-plum-900"><%= title %></h2>
+            <p class="mt-2 text-slate-600"><%= body %></p>
+            <ul class="mt-4 flex flex-wrap gap-2">
+              <% points.each do |pt| %><li class="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700"><%= icon("check", class: "h-3.5 w-3.5", stroke: 2.4) %><%= pt %></li><% end %>
+            </ul>
+          </div>
+        </li>
+      <% end %>
+    </ol>
+    <div class="mt-16 text-center"><%= link_to "Book a demo", new_contact_path, class: "btn btn-primary btn-lg" %></div>
+  </div>
+</section>

@@ -1,0 +1,4 @@
+<h2 style="margin:0 0 10px;font-size:20px;color:#24103a;">All gifts delivered 🎉</h2>
+<p>Your booking <strong><%= @booking.number %></strong> (<%= @booking.bookable_name %>, <%= @booking.quantity %> kits) is complete.</p>
+<p>Attached: your GST tax invoice <strong><%= @booking.tax_invoice&.number %></strong> for <strong><%= inr(@booking.total_paise) %></strong> and a per-recipient delivery report.</p>
+<p>Thank you for gifting with Avighna eGiftMitra.</p>

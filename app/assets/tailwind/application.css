@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+@source "../../components";
+@source "../../helpers";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+
+  --color-cream-50: #fffdf8;
+  --color-cream-100: #fff8ec;
+  --color-cream-200: #fdeed3;
+
+  --color-saffron-50: #fff6ed;
+  --color-saffron-100: #ffead4;
+  --color-saffron-200: #ffd0a8;
+  --color-saffron-300: #ffad70;
+  --color-saffron-400: #ff8a3d;
+  --color-saffron-500: #f96a12;
+  --color-saffron-600: #e04f08;
+  --color-saffron-700: #b93a0a;
+  --color-saffron-800: #932f10;
+  --color-saffron-900: #772a11;
+
+  --color-marigold-100: #fff3c4;
+  --color-marigold-300: #ffd75e;
+  --color-marigold-400: #ffc629;
+  --color-marigold-500: #f5ab00;
+  --color-marigold-600: #d18500;
+
+  --color-rani-50: #fdf2f7;
+  --color-rani-100: #fce7f1;
+  --color-rani-200: #fbcfe4;
+  --color-rani-400: #f06aa4;
+  --color-rani-500: #e33d82;
+  --color-rani-600: #cf2266;
+  --color-rani-700: #ad1650;
+
+  --color-plum-50: #f8f4fb;
+  --color-plum-100: #efe6f6;
+  --color-plum-200: #dccbec;
+  --color-plum-300: #bfa2dc;
+  --color-plum-400: #9a71c4;
+  --color-plum-500: #7b4fa8;
+  --color-plum-600: #633b8a;
+  --color-plum-700: #4e2d6e;
+  --color-plum-800: #36184f;
+  --color-plum-900: #24103a;
+  --color-plum-950: #170926;
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-slow: float 9s ease-in-out infinite;
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-shimmer: shimmer 3s linear infinite;
+  --animate-fade-up: fade-up .7s cubic-bezier(.2,.7,.2,1) both;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(var(--tw-rotate, 0)); }
+    50% { transform: translateY(-14px) rotate(var(--tw-rotate, 0)); }
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes shimmer {
+    from { background-position: 0% 50%; }
+    to { background-position: 200% 50%; }
+  }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+@layer base {
+  html, body { overflow-x: clip; }
+  html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+  body { @apply font-sans text-slate-800; }
+  :focus-visible { @apply outline-2 outline-offset-2 outline-saffron-500; }
+  [x-cloak] { display: none; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+}
+
+@layer components {
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap; }
+  .btn-lg { @apply px-6 py-3.5 text-base rounded-2xl; }
+  .btn-sm { @apply px-3 py-1.5 text-xs rounded-lg; }
+  .btn-primary { @apply text-white shadow-lg shadow-saffron-500/25 bg-gradient-to-r from-saffron-500 to-rani-500 hover:shadow-xl hover:shadow-rani-500/30 hover:-translate-y-0.5; }
+  .btn-dark { @apply bg-plum-900 text-white hover:bg-plum-800 shadow-lg shadow-plum-900/20 hover:-translate-y-0.5; }
+  .btn-secondary { @apply bg-white text-slate-800 ring-1 ring-slate-200 hover:ring-slate-300 hover:bg-slate-50 shadow-sm; }
+  .btn-ghost { @apply text-slate-600 hover:bg-slate-100 hover:text-slate-900; }
+  .btn-danger { @apply bg-red-600 text-white hover:bg-red-700 shadow-sm; }
+  .btn-success { @apply bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm; }
+
+  .label { @apply block text-sm font-medium text-slate-700 mb-1.5; }
+  .input { @apply block w-full rounded-xl border-0 bg-white px-3.5 py-2.5 text-sm text-slate-900 ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 shadow-xs transition focus:ring-2 focus:ring-saffron-500 focus:outline-none; }
+  .input-error { @apply ring-red-400 focus:ring-red-500 bg-red-50/40; }
+  .field-error { @apply mt-1.5 text-xs font-medium text-red-600; }
+  .hint { @apply mt-1.5 text-xs text-slate-500; }
+  .checkbox { @apply h-4 w-4 rounded border-slate-300 text-saffron-600 focus:ring-saffron-500 accent-saffron-600; }
+
+  .card { @apply rounded-2xl bg-white ring-1 ring-slate-200/70 shadow-sm; }
+  .card-body { @apply p-5 sm:p-6; }
+
+  .table-wrap { @apply overflow-x-auto rounded-2xl bg-white ring-1 ring-slate-200/70 shadow-sm; }
+  .table { @apply min-w-full divide-y divide-slate-100 text-sm; }
+  .table thead th { @apply bg-slate-50/80 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap; }
+  .table tbody td { @apply px-4 py-3.5 text-slate-700 align-middle; }
+  .table tbody tr { @apply hover:bg-saffron-50/40 transition; }
+
+  .text-gradient { @apply bg-gradient-to-r from-saffron-500 via-rani-500 to-plum-600 bg-clip-text text-transparent; background-size: 200% auto; }
+  .glass { @apply bg-white/70 backdrop-blur-xl; }
+
+  /* Progressive enhancement: content is visible by default; JS hides only below-the-fold items until scrolled to. */
+  .reveal-pending { opacity: 0; translate: 0 24px; }
+  .reveal-animate { transition: opacity .8s cubic-bezier(.2,.7,.2,1), translate .8s cubic-bezier(.2,.7,.2,1); }
+
+  .prose-legal { @apply text-slate-700 leading-relaxed; }
+  .prose-legal h2 { @apply mt-10 mb-3 font-display text-2xl font-semibold text-plum-900; }
+  .prose-legal h3 { @apply mt-6 mb-2 text-lg font-semibold text-plum-800; }
+  .prose-legal p { @apply my-3; }
+  .prose-legal ul { @apply my-3 list-disc pl-6 space-y-1.5; }
+  .prose-legal ol { @apply my-3 list-decimal pl-6 space-y-1.5; }
+  .prose-legal a { @apply text-saffron-600 underline underline-offset-2; }
+  .prose-legal strong { @apply text-slate-900; }
+  .prose-legal table { @apply my-4 w-full text-sm; }
+  .prose-legal th, .prose-legal td { @apply border border-slate-200 px-3 py-2 text-left; }
+
+  .pattern-dots { background-image: radial-gradient(rgba(249,106,18,.18) 1px, transparent 1px); background-size: 22px 22px; }
+  .pattern-grid-dark { background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px); background-size: 40px 40px; }
+}

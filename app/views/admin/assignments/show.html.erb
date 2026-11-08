@@ -1,0 +1,33 @@
+<% page_title "Assignment #{@assignment.id}" %>
+<% a = @assignment %>
+<%= render "admin/shared/back", path: admin_booking_path(a.booking), label: "Booking #{a.booking.number}" %>
+<%= render Ui::PageHeaderComponent.new(title: "#{a.vendor.name} · #{a.quantity} kits", subtitle: "#{a.booking.bookable_name} for #{a.booking.company.name}", eyebrow: "Assignment") do |c| %>
+  <% c.with_actions do %>
+    <%= status_badge(:assignment, a.status, a.status_label) %>
+    <%= link_to "Packing list", packing_list_admin_assignment_path(a), target: "_blank", class: "btn btn-secondary" %>
+    <%= link_to "Labels", labels_admin_assignment_path(a), target: "_blank", class: "btn btn-secondary" %>
+    <% if a.offered? && policy(a).expire? %><%= button_to "Expire offer", expire_admin_assignment_path(a), method: :patch, class: "btn btn-danger", form: { data: { turbo_confirm: "Expire and reassign?" } } %><% end %>
+  <% end %>
+<% end %>
+<div class="grid gap-6 lg:grid-cols-3">
+  <div class="card card-body">
+    <%= render "admin/shared/dl", cols: 1, rows: [["Vendor unit price", inr(a.vendor_unit_price_paise)], ["Vendor total", inr(a.vendor_total_paise)], ["Payment terms", "#{a.advance_pct}% advance · #{a.balance_terms == 'credit' ? "#{a.credit_days} days credit" : 'balance on delivery'}"],
+      ["Offered", a.created_at.strftime("%d %b %Y %H:%M")], ["SLA deadline", a.expires_at&.strftime("%d %b %Y %H:%M")], ["Accepted", a.accepted_at&.strftime("%d %b %Y %H:%M")], ["Dispatched", a.dispatched_at&.strftime("%d %b %Y %H:%M")], ["Delivered", a.delivered_at&.strftime("%d %b %Y %H:%M")], ["Problem reported", a.problem_report], ["Reason", a.rejection_reason]] %>
+    <% if a.qc_photos.attached? || a.delivery_proofs.attached? %>
+      <p class="mt-5 text-xs font-semibold uppercase tracking-wide text-slate-400">QC photos & proofs</p>
+      <div class="mt-2 flex flex-wrap gap-2"><% (a.qc_photos.to_a + a.delivery_proofs.to_a).each do |f| %><%= link_to f.filename.to_s, rails_blob_path(f, disposition: "inline"), target: "_blank", class: "rounded-lg bg-slate-100 px-2 py-1 text-xs" %><% end %></div>
+    <% end %>
+  </div>
+  <div class="card lg:col-span-2">
+    <div class="border-b border-slate-100 px-6 py-4"><h2 class="font-semibold text-slate-900">Recipients</h2></div>
+    <table class="table">
+      <thead><tr><th>Name</th><th>Address</th><th>Size</th><th>Tracking</th><th>Status</th></tr></thead>
+      <tbody>
+        <% @recipients.each do |r| %>
+          <tr><td class="font-medium"><%= r.name %></td><td class="text-xs"><%= r.city %>, <%= r.state %> <%= r.pincode %></td><td><%= r.tshirt_size %></td><td class="text-xs"><%= r.awb ? link_to("#{r.courier} #{r.awb}", r.tracking_url, target: "_blank", rel: "noopener", class: "text-saffron-600") : "—" %></td><td><%= status_badge(:recipient, r.status) %></td></tr>
+        <% end %>
+      </tbody>
+    </table>
+    <% if @recipients.empty? %><p class="p-6 text-sm text-slate-500">Recipients were released when this assignment ended.</p><% end %>
+  </div>
+</div>

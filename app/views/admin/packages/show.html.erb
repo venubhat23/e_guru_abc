@@ -1,0 +1,44 @@
+<% page_title @package.name %>
+<%= render "admin/shared/back", path: admin_packages_path, label: "Packages" %>
+<% low = @calc.lowest_offer(@package) %>
+<%= render Ui::PageHeaderComponent.new(title: "#{@package.display_emoji} #{@package.name}", subtitle: "#{@package.occasion.name} · minimum #{@package.min_qty} kits", eyebrow: "Package") do |c| %>
+  <% c.with_actions do %>
+    <%= link_to admin_offers_matrix_path(item: "pkg-#{@package.id}"), class: "btn btn-secondary" do %><%= icon("grid", class: "h-4 w-4") %> Offers matrix<% end %>
+    <% if policy(@package).update? %><%= link_to "Edit", edit_admin_package_path(@package), class: "btn btn-secondary" %><% end %>
+  <% end %>
+<% end %>
+<div class="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+  <%= render Ui::StatCardComponent.new(label: "HR price per kit", value: low ? inr(@calc.hr_price(low.vendor_price_paise)) : "—", icon: "rupee", tone: :orange, hint: "From lowest active offer") %>
+  <%= render Ui::StatCardComponent.new(label: "Lowest vendor price", value: low ? inr(low.vendor_price_paise) : "—", icon: "tag", tone: :purple, hint: low&.vendor&.name) %>
+  <%= render Ui::StatCardComponent.new(label: "GST (mixed supply)", value: "#{@package.gst_rate.to_i}%", icon: "receipt", tone: :blue, hint: "HSN #{@package.hsn_code}") %>
+  <%= render Ui::StatCardComponent.new(label: "Box volume", value: "#{@package.volume_units} units", icon: "cube", tone: :green, hint: @package.food? ? "Contains food — FSSAI vendors" : "No food items") %>
+</div>
+<div class="grid gap-6 lg:grid-cols-3">
+  <div class="card card-body">
+    <h2 class="font-semibold text-slate-900">What's inside</h2>
+    <p class="mt-1 text-sm text-slate-500"><%= @package.description %></p>
+    <ul class="mt-4 space-y-2">
+      <% @package.package_items.each do |i| %>
+        <li class="flex items-center gap-3 rounded-xl p-2 ring-1 ring-slate-100"><%= item_emoji_tile(i.product.display_emoji, size: "h-9 w-9 text-lg") %><div class="flex-1"><p class="text-sm font-medium"><%= i.product.name %></p><p class="text-xs text-slate-500">GST <%= i.product.gst_rate.to_i %>% · HSN <%= i.product.hsn_code %><%= " · brandable" if i.product.brandable %></p></div><span class="text-sm font-semibold">×<%= i.quantity %></span></li>
+      <% end %>
+    </ul>
+  </div>
+  <div class="card lg:col-span-2">
+    <div class="border-b border-slate-100 px-6 py-4"><h2 class="font-semibold text-slate-900">Vendor offers (<%= @offers.size %>)</h2></div>
+    <table class="table">
+      <thead><tr><th>Vendor</th><th class="text-right">Price</th><th class="text-right">MOQ</th><th class="text-right">Lead</th><th>Regions</th><th>Terms</th></tr></thead>
+      <tbody>
+        <% @offers.each do |o| %>
+          <tr class="<%= 'opacity-50' unless o.active && o.vendor.approved? %>">
+            <td><%= link_to o.vendor.name, admin_vendor_path(o.vendor), class: "font-medium hover:text-saffron-700" %><% unless o.vendor.approved? %> <span class="text-xs text-rani-600">(<%= o.vendor.status %>)</span><% end %></td>
+            <td class="text-right tabular-nums"><%= inr(o.vendor_price_paise) %></td>
+            <td class="text-right"><%= o.moq %></td>
+            <td class="text-right"><%= o.lead_time_days %>d</td>
+            <td class="max-w-[14rem] truncate text-xs"><%= o.vendor.regions.map(&:label).join(" · ") %></td>
+            <td class="text-xs"><%= o.payment_policy %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

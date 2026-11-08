@@ -1,0 +1,36 @@
+<% page_title "Price preview" %>
+<%= render "admin/shared/back", path: admin_catalogue_path, label: "Catalogue" %>
+<%= render Ui::PageHeaderComponent.new(title: "Price preview", subtitle: "See exactly how an HR price is built: markup priority company › product › category › default, then rounding.", eyebrow: "Pricing engine") %>
+<div class="grid gap-6 lg:grid-cols-3">
+  <%= form_with url: admin_price_preview_path, method: :get, class: "card card-body space-y-4" do |f| %>
+    <div><%= f.label :company_id, "Company (optional)", class: "label" %><%= f.select :company_id, options_from_collection_for_select(@companies, :id, :name, params[:company_id]), { include_blank: "No company (catalogue price)" }, class: "input" %></div>
+    <div>
+      <%= f.label :item, "Product or package", class: "label" %>
+      <select name="item" id="item" class="input">
+        <optgroup label="Packages"><% Package.ordered.each do |p| %><option value="pkg-<%= p.id %>" <%= "selected" if params[:item] == "pkg-#{p.id}" %>><%= p.name %></option><% end %></optgroup>
+        <optgroup label="Products"><% @products.each do |p| %><option value="prd-<%= p.id %>" <%= "selected" if params[:item] == "prd-#{p.id}" %>><%= p.name %></option><% end %></optgroup>
+      </select>
+    </div>
+    <div><%= f.label :vendor_price, "Vendor price (₹) — blank uses lowest offer", class: "label" %><%= f.number_field :vendor_price, value: params[:vendor_price], step: 0.01, min: 0, class: "input" %></div>
+    <%= f.submit "Calculate", class: "btn btn-primary w-full" %>
+  <% end %>
+  <div class="card card-body lg:col-span-2">
+    <% if @breakdown %>
+      <p class="text-sm text-slate-500"><%= @item.name %><%= " for #{@company.name}" if @company %></p>
+      <div class="mt-4 grid gap-4 sm:grid-cols-3">
+        <div class="rounded-2xl bg-slate-50 p-4"><p class="text-xs uppercase tracking-wide text-slate-400">Vendor price</p><p class="mt-1 text-2xl font-bold"><%= inr(@breakdown.vendor_paise) %></p></div>
+        <div class="rounded-2xl bg-saffron-50 p-4"><p class="text-xs uppercase tracking-wide text-saffron-700">Markup</p><p class="mt-1 text-2xl font-bold text-saffron-700"><%= @breakdown.markup_pct.to_f %>%</p><p class="text-xs text-saffron-700">from <%= @breakdown.markup_source %></p></div>
+        <div class="rounded-2xl bg-gradient-to-br from-plum-900 to-plum-700 p-4 text-white"><p class="text-xs uppercase tracking-wide text-plum-200">HR price</p><p class="mt-1 text-2xl font-bold"><%= inr(@breakdown.hr_paise) %></p></div>
+      </div>
+      <ol class="mt-6 space-y-2 text-sm">
+        <li class="flex justify-between rounded-lg px-3 py-2 ring-1 ring-slate-100"><span>Vendor price × (1 + <%= @breakdown.markup_pct.to_f %>%)</span><span class="font-mono"><%= inr(@breakdown.raw_paise) %></span></li>
+        <li class="flex justify-between rounded-lg px-3 py-2 ring-1 ring-slate-100"><span>Round up to nearest ₹<%= Setting[:price_rounding_step_rupees] %></span><span class="font-mono"><%= inr(@breakdown.hr_paise) %></span></li>
+        <li class="flex justify-between rounded-lg bg-emerald-50 px-3 py-2 text-emerald-800"><span>Platform margin per unit</span><span class="font-mono font-semibold"><%= inr(@breakdown.margin_paise) %> (<%= @breakdown.margin_pct %>%)</span></li>
+      </ol>
+    <% elsif @item %>
+      <%= render Ui::EmptyStateComponent.new(title: "No active offer for #{@item.name}", body: "Enter a vendor price to preview.", icon: "rupee") %>
+    <% else %>
+      <%= render Ui::EmptyStateComponent.new(title: "Pick an item to preview its price", icon: "rupee") %>
+    <% end %>
+  </div>
+</div>

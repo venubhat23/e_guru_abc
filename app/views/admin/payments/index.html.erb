@@ -1,0 +1,35 @@
+<% page_title "Payments" %>
+<%= render Ui::PageHeaderComponent.new(title: "Payments", subtitle: "Razorpay payments arrive via signed webhooks; bank transfers and POs need finance verification.", eyebrow: "Finance") do |c| %>
+  <% c.with_actions { link_to(admin_payments_path(queue: "offline"), class: "btn btn-primary") { icon("check-circle", class: "h-4 w-4") + " Offline verification queue (#{Payment.where(status: 'pending').where.not(method: 'razorpay').count})" } } %>
+<% end %>
+<div class="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+  <%= render Ui::StatCardComponent.new(label: "Verified", value: inr(@totals["verified"].to_i), icon: "check-circle", tone: :green, hint: "#{@counts['verified'].to_i} payments") %>
+  <%= render Ui::StatCardComponent.new(label: "Pending", value: inr(@totals["pending"].to_i), icon: "clock", tone: :orange, hint: "#{@counts['pending'].to_i} payments") %>
+  <%= render Ui::StatCardComponent.new(label: "Refunded", value: inr(@totals["refunded"].to_i), icon: "switch", tone: :purple, hint: "#{@counts['refunded'].to_i} payments") %>
+  <%= render Ui::StatCardComponent.new(label: "Failed", value: inr(@totals["failed"].to_i), icon: "x", tone: :pink, hint: "#{@counts['failed'].to_i} payments") %>
+</div>
+<%= render "admin/shared/tabs", tabs: { "pending" => "Pending", "verified" => "Verified", "refunded" => "Refunded", "failed" => "Failed" }, counts: @counts, path_helper: :admin_payments_path %>
+<% if @payments.any? %>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>Booking</th><th>Company</th><th>Method</th><th>Reference</th><th class="text-right">Amount</th><th class="text-right">Gateway fee</th><th>Status</th><th>Date</th></tr></thead>
+      <tbody>
+        <% @payments.each do |p| %>
+          <tr>
+            <td class="font-mono text-xs"><%= link_to p.booking.number, admin_booking_path(p.booking), class: "font-semibold text-plum-900 hover:text-saffron-700" %></td>
+            <td><%= p.booking.company.name %></td>
+            <td><%= link_to p.method_label, admin_payment_path(p), class: "hover:text-saffron-700" %></td>
+            <td class="font-mono text-xs"><%= p.razorpay_payment_id || p.reference || p.razorpay_order_id %></td>
+            <td class="text-right font-semibold tabular-nums"><%= inr(p.amount_paise) %></td>
+            <td class="text-right tabular-nums text-slate-500"><%= inr(p.gateway_fee_paise) %></td>
+            <td><%= status_badge(:payment, p.status) %></td>
+            <td class="text-xs text-slate-500"><%= p.created_at.strftime("%d %b %Y") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <%= pagy_nav_tw(@pagy) %>
+<% else %>
+  <%= render Ui::EmptyStateComponent.new(title: "No payments here", icon: "rupee") %>
+<% end %>

@@ -1,0 +1,22 @@
+<% page_title "Categories" %>
+<%= render "admin/shared/back", path: admin_catalogue_path, label: "Catalogue" %>
+<%= render Ui::PageHeaderComponent.new(title: "Categories", subtitle: "Category markup overrides apply unless a company or product override exists.", eyebrow: "Catalogue") do |c| %>
+  <% c.with_actions { link_to(new_admin_category_path, class: "btn btn-primary") { icon("plus", class: "h-4 w-4", stroke: 2) + " New category" } } %>
+<% end %>
+<div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>Category</th><th>Parent</th><th class="text-right">Markup override</th><th>Food (FSSAI)</th><th></th></tr></thead>
+    <tbody>
+      <% @records.each do |c| %>
+        <tr>
+          <td class="flex items-center gap-3"><span class="text-xl"><%= c.emoji %></span><span class="font-semibold text-slate-900"><%= c.name %></span></td>
+          <td><%= c.parent&.name || "—" %></td>
+          <td class="text-right"><%= c.markup_override_pct ? "#{c.markup_override_pct.to_f}%" : "Default (#{Setting[:default_markup_pct]}%)" %></td>
+          <td><%= c.food? ? "Yes" : "No" %></td>
+          <td class="whitespace-nowrap text-right"><%= link_to "Edit", edit_admin_category_path(c), class: "btn btn-secondary btn-sm" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<%= pagy_nav_tw(@pagy) %>

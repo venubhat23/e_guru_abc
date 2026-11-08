@@ -1,0 +1,11 @@
+<%= form_with model: [:admin, @record], class: "card card-body max-w-2xl space-y-5" do |f| %>
+  <div class="grid gap-5 sm:grid-cols-2">
+    <div><%= f.label :name, class: "label" %><%= f.text_field :name, class: field_classes(@record, :name), required: true %><%= field_error(@record, :name) %></div>
+    <div><%= f.label :emoji, class: "label" %><%= f.text_field :emoji, class: "input", maxlength: 4 %></div>
+    <div><%= f.label :parent_id, "Parent category", class: "label" %><%= f.collection_select :parent_id, Category.ordered.where.not(id: @record.id), :id, :name, { include_blank: "None" }, class: "input" %></div>
+    <div><%= f.label :markup_override_pct, "Markup override (%)", class: "label" %><%= f.number_field :markup_override_pct, step: 0.5, class: field_classes(@record, :markup_override_pct), placeholder: "Default #{Setting[:default_markup_pct]}%" %><%= field_error(@record, :markup_override_pct) %></div>
+    <div><%= f.label :position, class: "label" %><%= f.number_field :position, class: "input" %></div>
+    <label class="flex items-center gap-2 self-end pb-2.5 text-sm font-medium text-slate-700"><%= f.check_box :food, class: "checkbox" %> Food category (vendors need FSSAI)</label>
+  </div>
+  <div class="flex gap-2 border-t border-slate-100 pt-5"><%= f.submit "Save category", class: "btn btn-primary" %><%= link_to "Cancel", admin_categories_path, class: "btn btn-ghost" %></div>
+<% end %>

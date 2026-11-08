@@ -1,0 +1,86 @@
+<% page_title "Traffic analytics" %>
+<%= render Ui::PageHeaderComponent.new(title: "Traffic analytics", subtitle: "Visits and clicks on the public website. Bots and signed-in staff are not counted.", eyebrow: "Website") %>
+
+<div class="mb-5 inline-flex rounded-xl bg-white p-1 ring-1 ring-slate-200">
+  <% Admin::TrafficController::RANGES.each do |key, days| %>
+    <%= link_to "Last #{days} days", admin_traffic_path(days: key),
+          class: "rounded-lg px-3 py-1.5 text-sm font-semibold transition #{@days == days ? 'bg-plum-900 text-white' : 'text-slate-600 hover:bg-slate-100'}" %>
+  <% end %>
+</div>
+
+<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+  <%= render Ui::StatCardComponent.new(label: "Page views", value: number_with_delimiter(@stats[:views]), icon: "eye", tone: :orange, hint: "#{number_with_delimiter(@stats[:today])} today") %>
+  <%= render Ui::StatCardComponent.new(label: "Unique visitors", value: number_with_delimiter(@stats[:visitors]), icon: "users", tone: :purple, hint: "Last #{@days} days") %>
+  <%= render Ui::StatCardComponent.new(label: "Clicks", value: number_with_delimiter(@stats[:clicks]), icon: "bolt", tone: :pink, hint: "Links and buttons") %>
+  <%= render Ui::StatCardComponent.new(label: "Clicks per view", value: "#{@stats[:ctr]}%", icon: "trending-up", tone: :green, hint: "Clicks ÷ page views") %>
+</div>
+
+<div class="mt-6 grid gap-6 lg:grid-cols-3">
+  <div class="card card-body lg:col-span-2">
+    <div class="flex items-center justify-between"><h2 class="font-semibold text-slate-900">Views and clicks per day</h2><span class="text-xs text-slate-500">Last <%= @days %> days</span></div>
+    <div class="mt-4"><%= line_chart @daily, colors: ["#f96a12", "#7b4fa8"], height: "280px", legend: "bottom", library: { scales: { y: { ticks: { precision: 0 } } } } %></div>
+  </div>
+  <div class="card card-body">
+    <h2 class="font-semibold text-slate-900">Devices</h2>
+    <% if @devices.any? %>
+      <div class="mt-4"><%= pie_chart @devices, donut: true, height: "280px", colors: ["#f96a12", "#7b4fa8", "#e33d82"], legend: "bottom" %></div>
+    <% else %>
+      <p class="mt-3 text-sm text-slate-500">No visits yet.</p>
+    <% end %>
+  </div>
+</div>
+
+<div class="mt-6 grid gap-6 lg:grid-cols-2">
+  <div class="card">
+    <div class="border-b border-slate-100 px-6 py-4"><h2 class="font-semibold text-slate-900">Top pages</h2></div>
+    <% if @top_pages.any? %>
+      <div class="table-wrap rounded-none ring-0">
+        <table class="table">
+          <thead><tr><th>Page</th><th class="text-right">Views</th><th class="text-right">Visitors</th></tr></thead>
+          <tbody>
+            <% @top_pages.each do |path, count| %>
+              <tr>
+                <td class="max-w-xs truncate font-medium"><%= link_to path, path, target: "_blank", rel: "noopener", class: "hover:text-saffron-600" %></td>
+                <td class="text-right tabular-nums"><%= number_with_delimiter(count) %></td>
+                <td class="text-right tabular-nums text-slate-500"><%= number_with_delimiter(@page_visitors[path].to_i) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="p-6"><%= render Ui::EmptyStateComponent.new(title: "No page views yet", body: "Views appear here as people visit the website.", icon: "eye") %></div>
+    <% end %>
+  </div>
+
+  <div class="card">
+    <div class="border-b border-slate-100 px-6 py-4"><h2 class="font-semibold text-slate-900">Most clicked</h2></div>
+    <% if @top_clicks.any? %>
+      <div class="table-wrap rounded-none ring-0">
+        <table class="table">
+          <thead><tr><th>Button / link</th><th>Goes to</th><th class="text-right">Clicks</th></tr></thead>
+          <tbody>
+            <% @top_clicks.each do |(label, target), count| %>
+              <tr>
+                <td class="max-w-[14rem] truncate font-medium"><%= label.presence || "(no text)" %></td>
+                <td class="max-w-[12rem] truncate text-xs text-slate-500"><%= target.presence || "—" %></td>
+                <td class="text-right tabular-nums"><%= number_with_delimiter(count) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="p-6"><%= render Ui::EmptyStateComponent.new(title: "No clicks yet", body: "Link and button clicks on the website appear here.", icon: "bolt") %></div>
+    <% end %>
+  </div>
+</div>
+
+<div class="card card-body mt-6">
+  <h2 class="font-semibold text-slate-900">Where visitors come from</h2>
+  <% if @referrers.any? %>
+    <div class="mt-4"><%= bar_chart @referrers, colors: ["#e33d82"], height: "#{[ @referrers.size * 36, 160 ].max}px", library: { plugins: { legend: { display: false } }, scales: { x: { ticks: { precision: 0 } } } } %></div>
+  <% else %>
+    <p class="mt-3 text-sm text-slate-500">No outside referrers yet — visits so far were direct or from your own site.</p>
+  <% end %>
+</div>

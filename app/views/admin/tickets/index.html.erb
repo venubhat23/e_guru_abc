@@ -1,0 +1,27 @@
+<% page_title "Tickets" %>
+<%= render Ui::PageHeaderComponent.new(title: "Tickets", subtitle: "Issues raised by HR per booking or recipient. Open tickets block auto-confirmation of delivery.", eyebrow: "Operations") %>
+<%= render "admin/shared/tabs", tabs: { "open" => "Open", "in_progress" => "In progress", "resolved" => "Resolved", "closed" => "Closed" }, counts: @counts, path_helper: :admin_tickets_path, all_label: "Unresolved" %>
+<% if @tickets.any? %>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>Ticket</th><th>Subject</th><th>Company</th><th>Booking</th><th>Priority</th><th>Assignee</th><th>Status</th><th>Raised</th></tr></thead>
+      <tbody>
+        <% @tickets.each do |t| %>
+          <tr>
+            <td class="font-mono text-xs"><%= link_to t.number, admin_ticket_path(t), class: "font-semibold text-plum-900 hover:text-saffron-700" %></td>
+            <td><%= link_to t.subject, admin_ticket_path(t), class: "font-medium hover:text-saffron-700" %><span class="block text-xs text-slate-400"><%= t.category_label %><%= " · #{t.booking_recipient.name}" if t.booking_recipient %></span></td>
+            <td><%= t.company.name %></td>
+            <td class="font-mono text-xs"><%= link_to t.booking.number, admin_booking_path(t.booking), class: "hover:text-saffron-700" %></td>
+            <td><%= render Ui::BadgeComponent.new(text: t.priority.capitalize, tone: ApplicationHelper::PRIORITY_TONES[t.priority]) %></td>
+            <td><%= t.assignee&.first_name || "—" %></td>
+            <td><%= status_badge(:ticket, t.status) %></td>
+            <td class="text-xs text-slate-500"><%= time_ago(t.created_at) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <%= pagy_nav_tw(@pagy) %>
+<% else %>
+  <%= render Ui::EmptyStateComponent.new(title: "No tickets here 🎉", icon: "ticket") %>
+<% end %>

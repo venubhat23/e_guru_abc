@@ -1,0 +1,34 @@
+<% page_title "Vendor payouts" %>
+<%= render Ui::PageHeaderComponent.new(title: "Vendor payouts", subtitle: "Advance on acceptance, balance on delivery or after credit days (minus approved penalties). Finance approves → records UTR → vendor confirms receipt.", eyebrow: "Finance") %>
+<div class="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+  <%= render Ui::StatCardComponent.new(label: "Due", value: inr(@totals["due"].to_i), icon: "clock", tone: :orange, hint: "#{@counts['due'].to_i} payouts · #{inr(@overdue)} overdue", href: admin_payouts_path(status: "due")) %>
+  <%= render Ui::StatCardComponent.new(label: "Approved, to pay", value: inr(@totals["approved"].to_i), icon: "check-circle", tone: :blue, hint: "#{@counts['approved'].to_i} payouts", href: admin_payouts_path(status: "approved")) %>
+  <%= render Ui::StatCardComponent.new(label: "Paid, awaiting vendor", value: inr(@totals["paid"].to_i), icon: "banknotes", tone: :purple, hint: "#{@counts['paid'].to_i} payouts") %>
+  <%= render Ui::StatCardComponent.new(label: "Received", value: inr(@totals["received"].to_i), icon: "trending-up", tone: :green, hint: "#{@counts['received'].to_i} payouts") %>
+</div>
+<%= render "admin/shared/tabs", tabs: { "due" => "Due", "approved" => "Approved", "paid" => "Paid", "received" => "Received" }, counts: @counts, path_helper: :admin_payouts_path %>
+<% if @payouts.any? %>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>Vendor</th><th>Booking</th><th>Type</th><th class="text-right">Gross</th><th class="text-right">Penalty</th><th class="text-right">Net</th><th>Due</th><th>UTR</th><th>Status</th></tr></thead>
+      <tbody>
+        <% @payouts.each do |po| %>
+          <tr>
+            <td><%= link_to po.vendor.name, admin_payout_path(po), class: "font-semibold text-slate-900 hover:text-saffron-700" %></td>
+            <td class="font-mono text-xs"><%= link_to po.assignment.booking.number, admin_booking_path(po.assignment.booking), class: "hover:text-saffron-700" %><% if po.assignment.booking.disputed? %> <span class="text-rani-600">· disputed</span><% end %></td>
+            <td><%= po.kind.capitalize %></td>
+            <td class="text-right tabular-nums"><%= inr(po.gross_paise) %></td>
+            <td class="text-right tabular-nums <%= po.penalty_paise.positive? ? 'text-rani-600' : 'text-slate-400' %>"><%= po.penalty_paise.positive? ? "−#{inr(po.penalty_paise)}" : "—" %></td>
+            <td class="text-right font-semibold tabular-nums"><%= inr(po.amount_paise) %></td>
+            <td class="whitespace-nowrap <%= 'font-semibold text-rani-600' if po.overdue? %>"><%= po.due_on.strftime("%d %b %Y") %></td>
+            <td class="font-mono text-xs"><%= po.utr || "—" %></td>
+            <td><%= status_badge(:payout, po.status) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <%= pagy_nav_tw(@pagy) %>
+<% else %>
+  <%= render Ui::EmptyStateComponent.new(title: "No payouts here", icon: "banknotes") %>
+<% end %>

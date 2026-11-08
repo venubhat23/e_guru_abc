@@ -1,0 +1,51 @@
+<% page_title "Leads CRM" %>
+<%= render Ui::PageHeaderComponent.new(title: "Leads CRM", subtitle: "Every Contact Us enquiry, from first touch to signed company.", eyebrow: "Sales") %>
+
+<div class="mb-5 flex gap-2 overflow-x-auto pb-1">
+  <% total = @counts.values.sum %>
+  <%= link_to admin_leads_path(request.query_parameters.except("status", "page")), class: "flex shrink-0 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition #{params[:status].blank? ? 'bg-plum-900 text-white shadow' : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50'}" do %>All <span class="rounded-md bg-black/10 px-1.5 text-xs"><%= total %></span><% end %>
+  <% Lead::STATUS_LABELS.each do |key, label| %>
+    <%= link_to admin_leads_path(request.query_parameters.except("page").merge(status: key)), class: "flex shrink-0 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition #{params[:status] == key ? 'bg-plum-900 text-white shadow' : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50'}" do %><%= label %> <span class="rounded-md bg-black/10 px-1.5 text-xs"><%= @counts[key].to_i %></span><% end %>
+  <% end %>
+</div>
+
+<%= form_with url: admin_leads_path, method: :get, class: "card card-body mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5", data: { controller: "autosubmit", turbo_frame: "leads", turbo_action: "advance" } do |f| %>
+  <%= hidden_field_tag :status, params[:status] if params[:status].present? %>
+  <div class="relative lg:col-span-2">
+    <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400"><%= icon("search", class: "h-4 w-4") %></span>
+    <%= f.search_field :q, value: params[:q], placeholder: "Search name, company, email, phone…", class: "input pl-9", data: { action: "input->autosubmit#debounced" }, aria: { label: "Search leads" } %>
+  </div>
+  <%= f.select :owner_id, options_from_collection_for_select(@owners, :id, :name, params[:owner_id]), { include_blank: "All owners" }, class: "input", data: { action: "autosubmit#submit" }, aria: { label: "Owner" } %>
+  <%= f.select :occasion_id, options_from_collection_for_select(@occasions, :id, :name, params[:occasion_id]), { include_blank: "All occasions" }, class: "input", data: { action: "autosubmit#submit" }, aria: { label: "Occasion" } %>
+  <%= f.select :follow_up, options_for_select([["Any follow-up", ""], ["Follow-up due", "due"]], params[:follow_up]), {}, class: "input", data: { action: "autosubmit#submit" }, aria: { label: "Follow-up" } %>
+<% end %>
+
+<%= turbo_frame_tag "leads" do %>
+  <% if @leads.any? %>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Lead</th><th>Company</th><th>Occasion</th><th class="text-right">Employees</th><th class="text-right">Budget / emp</th><th>Status</th><th>Owner</th><th>Follow-up</th><th>Received</th></tr></thead>
+        <tbody>
+          <% @leads.each do |lead| %>
+            <tr class="cursor-pointer">
+              <td><%= link_to admin_lead_path(lead), class: "block", data: { turbo_frame: "_top" } do %><span class="font-semibold text-slate-900"><%= lead.name %></span><span class="block text-xs text-slate-500"><%= lead.work_email %></span><% end %></td>
+              <td class="font-medium"><%= lead.company_name %><% if lead.converted? %> <span title="Converted">🏢</span><% end %></td>
+              <td><%= lead.occasion&.name || "—" %></td>
+              <td class="text-right tabular-nums"><%= lead.employee_count ? Inr.group(lead.employee_count) : "—" %></td>
+              <td class="text-right tabular-nums"><%= inr(lead.budget_per_employee_paise) %></td>
+              <td><%= lead_status_badge(lead) %></td>
+              <td><% if lead.owner %><span class="inline-flex items-center gap-2"><span class="grid h-6 w-6 place-items-center rounded-full bg-plum-100 text-[10px] font-bold text-plum-700"><%= lead.owner.initials %></span><%= lead.owner.first_name %></span><% else %><span class="text-slate-400">Unassigned</span><% end %></td>
+              <td class="<%= lead.overdue_follow_up? ? 'font-semibold text-rani-600' : '' %>"><%= lead.follow_up_on&.strftime("%d %b") || "—" %></td>
+              <td class="whitespace-nowrap text-xs text-slate-500"><%= time_ago(lead.created_at) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <%= pagy_nav_tw(@pagy) %>
+  <% else %>
+    <%= render Ui::EmptyStateComponent.new(title: "No leads match", body: "Try clearing filters, or wait for new Contact Us submissions.", icon: "funnel") do |c| %>
+      <% c.with_action { link_to "Clear filters", admin_leads_path, class: "btn btn-secondary", data: { turbo_frame: "_top" } } %>
+    <% end %>
+  <% end %>
+<% end %>

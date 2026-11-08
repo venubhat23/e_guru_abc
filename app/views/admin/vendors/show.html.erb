@@ -1,0 +1,115 @@
+<% page_title @vendor.name %>
+<%= render "admin/shared/back", path: admin_vendors_path, label: "All vendors" %>
+<div class="card mb-6">
+  <div class="h-2 rounded-t-2xl bg-gradient-to-r from-emerald-500 to-teal-400"></div>
+  <div class="card-body flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div class="flex items-center gap-4">
+      <span class="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-400 text-lg font-bold text-white"><%= @vendor.name.first(2).upcase %></span>
+      <div>
+        <div class="flex flex-wrap items-center gap-2"><h1 class="text-2xl font-bold text-slate-900"><%= @vendor.name %></h1><%= vendor_status_badge(@vendor) %></div>
+        <p class="text-sm text-slate-500"><%= @vendor.contact_name %> · <%= @vendor.email %> · <%= @vendor.phone %></p>
+      </div>
+    </div>
+    <% if policy(@vendor).approve? %>
+      <div class="flex flex-wrap gap-2">
+        <%= link_to "Edit", edit_admin_vendor_path(@vendor), class: "btn btn-secondary" %>
+        <% unless @vendor.approved? %>
+          <%= button_to "Approve vendor", approve_admin_vendor_path(@vendor), method: :patch, class: "btn btn-success", disabled: !@vendor.kyc_complete?, form: { data: { turbo_confirm: "Approve #{@vendor.name}?" } } %>
+        <% end %>
+        <% if @vendor.pending? || @vendor.approved? %>
+          <div data-controller="dropdown" class="relative">
+            <button type="button" class="btn btn-ghost text-rani-600" data-action="dropdown#toggle"><%= @vendor.pending? ? "Reject…" : "Suspend…" %></button>
+            <div class="absolute right-0 z-20 mt-2 hidden w-80 rounded-2xl bg-white p-4 shadow-2xl ring-1 ring-slate-200" data-dropdown-target="menu">
+              <%= form_with url: (@vendor.pending? ? reject_admin_vendor_path(@vendor) : suspend_admin_vendor_path(@vendor)), method: :patch do |f| %>
+                <%= f.label :reason, @vendor.pending? ? "Rejection reason (sent to vendor)" : "Suspension reason", class: "label" %>
+                <%= f.text_area :reason, rows: 3, required: true, class: "input" %>
+                <%= f.submit(@vendor.pending? ? "Reject application" : "Suspend vendor", class: "btn btn-danger mt-3 w-full") %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+  <% if @vendor.rejection_reason.present? || @vendor.suspension_reason.present? %>
+    <div class="rounded-b-2xl border-t border-rani-100 bg-rani-50 px-6 py-3 text-sm text-rani-700"><strong><%= @vendor.rejected? ? "Rejected" : "Suspended" %>:</strong> <%= @vendor.rejection_reason || @vendor.suspension_reason %></div>
+  <% end %>
+</div>
+
+<div class="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+  <%= render Ui::StatCardComponent.new(label: "Rating", value: "#{@vendor.rating.to_f} / 5", icon: "star", tone: :orange) %>
+  <%= render Ui::StatCardComponent.new(label: "On-time delivery", value: pct(@performance[:on_time_pct]), icon: "truck", tone: :green, hint: "#{@performance[:delivered]} delivered") %>
+  <%= render Ui::StatCardComponent.new(label: "Rejected / expired", value: pct(@performance[:rejection_pct]), icon: "x", tone: :pink, hint: "#{@performance[:declined]} of #{@performance[:total]} offers") %>
+  <%= render Ui::StatCardComponent.new(label: "Paid out", value: inr(@payout_totals.slice("paid", "received").values.sum), icon: "banknotes", tone: :purple, hint: "#{inr(@payout_totals.slice('due', 'approved').values.sum)} outstanding") %>
+</div>
+
+<div class="grid gap-6 lg:grid-cols-3">
+  <div class="space-y-6 lg:col-span-2">
+    <div class="card card-body">
+      <div class="flex items-center justify-between"><h2 class="font-semibold text-slate-900">KYC & business details</h2>
+        <%= render Ui::BadgeComponent.new(text: @vendor.kyc_complete? ? "KYC complete" : "KYC incomplete", tone: @vendor.kyc_complete? ? :green : :yellow) %></div>
+      <div class="mt-4">
+        <%= render "admin/shared/dl", rows: [["Legal name", @vendor.legal_name], ["GSTIN", @vendor.gstin], ["PAN", @vendor.pan], ["FSSAI", @vendor.fssai_number.presence || (@vendor.needs_fssai? ? "Required — food supplier" : "Not required")],
+          ["Bank account", "#{@vendor.bank_account_name} · #{@vendor.masked_account}"], ["IFSC", @vendor.bank_ifsc],
+          ["Warehouse", [@vendor.warehouse_address, @vendor.warehouse_city, @vendor.warehouse_state, @vendor.warehouse_pincode].compact_blank.join(", ")], ["Approved on", @vendor.approved_at&.strftime("%d %b %Y")]] %>
+      </div>
+      <% if @vendor.kyc_missing.any? %><p class="mt-4 rounded-xl bg-amber-50 p-3 text-sm text-amber-800"><strong>Missing:</strong> <%= @vendor.kyc_missing.to_sentence %></p><% end %>
+      <h3 class="mt-6 text-sm font-semibold text-slate-900">KYC documents</h3>
+      <% if @vendor.kyc_documents.attached? %>
+        <ul class="mt-3 grid gap-3 sm:grid-cols-3">
+          <% @vendor.kyc_documents.each do |doc| %>
+            <li><%= link_to rails_blob_path(doc, disposition: "inline"), target: "_blank", class: "flex items-center gap-3 rounded-xl p-3 ring-1 ring-slate-200 transition hover:bg-saffron-50 hover:ring-saffron-200" do %>
+              <span class="grid h-10 w-10 place-items-center rounded-lg bg-rani-50 text-rani-600"><%= icon("document") %></span>
+              <span class="min-w-0"><span class="block truncate text-sm font-medium text-slate-800"><%= doc.filename %></span><span class="text-xs text-slate-500"><%= number_to_human_size(doc.byte_size) %> · view</span></span>
+            <% end %></li>
+          <% end %>
+        </ul>
+      <% else %><p class="mt-2 text-sm text-slate-500">No documents uploaded yet.</p><% end %>
+    </div>
+
+    <div class="card">
+      <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4"><h2 class="font-semibold text-slate-900">Offers (<%= @offers.size %>)</h2><%= link_to "Open offers matrix →", admin_offers_matrix_path, class: "text-sm font-semibold text-saffron-600" %></div>
+      <div class="overflow-x-auto">
+        <table class="table">
+          <thead><tr><th>Item</th><th class="text-right">Vendor price</th><th class="text-right">MOQ</th><th class="text-right">Capacity/wk</th><th class="text-right">Lead time</th><th>Payment terms</th><th>Status</th></tr></thead>
+          <tbody>
+            <% @offers.each do |o| %>
+              <tr>
+                <td><%= link_to o.offerable.name, o.offerable.is_a?(Package) ? admin_package_path(o.offerable) : admin_product_path(o.offerable), class: "font-medium text-slate-900 hover:text-saffron-700" %> <span class="text-xs text-slate-400"><%= o.offerable_type %></span></td>
+                <td class="text-right tabular-nums"><%= inr(o.vendor_price_paise) %></td>
+                <td class="text-right"><%= o.moq %></td>
+                <td class="text-right"><%= o.capacity_per_week %></td>
+                <td class="text-right"><%= o.lead_time_days %>d</td>
+                <td class="text-xs"><%= o.payment_policy %></td>
+                <td><%= active_badge(o.active) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="space-y-6">
+    <div class="card card-body">
+      <h2 class="font-semibold text-slate-900">Service regions</h2>
+      <ul class="mt-3 flex flex-wrap gap-2">
+        <% @vendor.regions.each do |r| %><li class="flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700"><%= icon("map-pin", class: "h-3.5 w-3.5") %><%= r.label %></li><% end %>
+      </ul>
+      <% if @vendor.regions.none? %><p class="text-sm text-slate-500">No regions configured.</p><% end %>
+    </div>
+    <div class="card card-body">
+      <h2 class="font-semibold text-slate-900">Recent assignments</h2>
+      <ul class="mt-3 space-y-2">
+        <% @assignments.each do |a| %>
+          <li><%= link_to admin_assignment_path(a), class: "flex items-center justify-between rounded-xl px-3 py-2 text-sm hover:bg-slate-50" do %><span class="font-medium text-slate-800"><%= a.booking.number %> · <%= a.quantity %> kits</span><%= status_badge(:assignment, a.status, a.status_label) %><% end %></li>
+        <% end %>
+      </ul>
+      <% if @assignments.empty? %><p class="text-sm text-slate-500">No assignments yet.</p><% end %>
+    </div>
+    <div class="card card-body">
+      <h2 class="font-semibold text-slate-900">Users</h2>
+      <% @vendor.users.each do |u| %><p class="mt-2 text-sm"><span class="font-medium"><%= u.name %></span> · <span class="text-slate-500"><%= u.email_address %></span></p><% end %>
+    </div>
+  </div>
+</div>

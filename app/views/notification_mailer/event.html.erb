@@ -1,0 +1,4 @@
+<h2 style="margin:0 0 10px;font-size:20px;color:#24103a;"><%= @title %></h2>
+<p>Hi <%= @user.first_name %>,</p>
+<% if @body.present? %><p><%= @body %></p><% end %>
+<% if @url %><p style="margin:22px 0;"><a href="<%= @url %>" style="display:inline-block;background:#24103a;color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none;font-weight:600;">Open Avighna eGiftMitra →</a></p><% end %>

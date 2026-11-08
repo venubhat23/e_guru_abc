@@ -1,0 +1,38 @@
+<% page_title "Sign in" %>
+<div class="animate-fade-up">
+  <h1 class="font-display text-4xl font-semibold text-plum-950">Welcome back 👋</h1>
+  <p class="mt-2 text-slate-500">Sign in to your HR, vendor or admin workspace.</p>
+
+  <%= form_with url: session_path, class: "mt-10 space-y-5", data: { turbo: false } do |f| %>
+    <div>
+      <%= f.label :email_address, "Email", class: "label" %>
+      <div class="relative">
+        <span class="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-slate-400"><%= icon("mail", class: "h-5 w-5") %></span>
+        <%= f.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "you@company.com", value: params[:email_address], class: "input pl-11 py-3" %>
+      </div>
+    </div>
+    <div>
+      <div class="flex items-center justify-between">
+        <%= f.label :password, class: "label" %>
+        <%= link_to "Forgot password?", new_password_path, class: "mb-1.5 text-sm font-semibold text-saffron-600 hover:text-saffron-700" %>
+      </div>
+      <div class="relative" data-controller="password-toggle">
+        <span class="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-slate-400"><%= icon("lock", class: "h-5 w-5") %></span>
+        <%= f.password_field :password, required: true, autocomplete: "current-password", placeholder: "••••••••", maxlength: 72, class: "input pl-11 pr-12 py-3", data: { password_toggle_target: "input" } %>
+        <button type="button" class="absolute inset-y-0 right-2 my-auto h-9 rounded-lg px-2 text-slate-400 hover:text-slate-700" data-action="password-toggle#toggle" aria-label="Show password"><%= icon("eye", class: "h-5 w-5") %></button>
+      </div>
+    </div>
+    <%= f.button type: "submit", class: "btn btn-primary btn-lg w-full" do %>Sign in <%= icon("arrow-right", class: "h-5 w-5", stroke: 2) %><% end %>
+  <% end %>
+
+  <div class="mt-10 grid gap-3 sm:grid-cols-2">
+    <%= link_to new_contact_path, class: "group rounded-2xl bg-white p-4 ring-1 ring-slate-200 transition hover:ring-saffron-300 hover:shadow-md" do %>
+      <p class="flex items-center gap-2 text-sm font-semibold text-slate-900"><%= icon("building", class: "h-4 w-4 text-saffron-600") %> New company?</p>
+      <p class="mt-1 text-xs text-slate-500">Book a demo to get your HR workspace.</p>
+    <% end %>
+    <%= link_to vendor_signup_path, class: "group rounded-2xl bg-white p-4 ring-1 ring-slate-200 transition hover:ring-emerald-300 hover:shadow-md" do %>
+      <p class="flex items-center gap-2 text-sm font-semibold text-slate-900"><%= icon("briefcase", class: "h-4 w-4 text-emerald-600") %> Are you a vendor?</p>
+      <p class="mt-1 text-xs text-slate-500">Apply to supply gifts with us.</p>
+    <% end %>
+  </div>
+</div>

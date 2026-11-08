@@ -1,0 +1,10 @@
+<% page_title @member.name %>
+<%= link_to hr_team_members_path, class: "mb-4 inline-flex items-center gap-1 text-sm font-semibold text-slate-500 hover:text-slate-800" do %><%= icon("chevron-left", class: "h-4 w-4") %> Team<% end %>
+<div class="card card-body max-w-xl">
+  <div class="flex items-center gap-4"><span class="grid h-14 w-14 place-items-center rounded-full bg-gradient-to-br from-saffron-400 to-rani-500 text-lg font-bold text-white"><%= @member.initials %></span><div><h1 class="text-xl font-bold text-slate-900"><%= @member.name %></h1><p class="text-sm text-slate-500"><%= @member.email_address %></p></div></div>
+  <dl class="mt-6 space-y-3 text-sm">
+    <div class="flex justify-between"><dt class="text-slate-500">Role</dt><dd class="font-medium"><%= @member.role_label %></dd></div>
+    <div class="flex justify-between"><dt class="text-slate-500">Phone</dt><dd class="font-medium"><%= @member.phone || "—" %></dd></div>
+    <div class="flex justify-between"><dt class="text-slate-500">Last sign-in</dt><dd class="font-medium"><%= time_ago(@member.last_sign_in_at) %></dd></div>
+  </dl>
+</div>

@@ -1,0 +1,11 @@
+<% page_title "Company profile" %>
+<%= render Ui::PageHeaderComponent.new(title: @company.name, subtitle: "Company profile used on proformas and tax invoices.", eyebrow: "Settings") %>
+<div class="card card-body max-w-2xl">
+  <dl class="grid gap-5 sm:grid-cols-2">
+    <% [["Legal name", @company.legal_name], ["GSTIN", @company.gstin], ["PAN", @company.pan], ["State (place of supply)", @company.state], ["Payment terms", @company.payment_terms.humanize], ["Approval limit", inr(@company.approval_limit_paise)]].each do |k, v| %>
+      <div><dt class="text-xs font-medium uppercase tracking-wide text-slate-400"><%= k %></dt><dd class="mt-1 text-sm font-medium text-slate-800"><%= v.presence || "—" %></dd></div>
+    <% end %>
+    <div class="sm:col-span-2"><dt class="text-xs font-medium uppercase tracking-wide text-slate-400">Billing address</dt><dd class="mt-1 whitespace-pre-line text-sm text-slate-800"><%= @company.billing_address.presence || "—" %></dd></div>
+  </dl>
+  <p class="mt-6 rounded-xl bg-cream-100 p-3 text-xs text-slate-600">Profile editing, logo upload and user invitations arrive in Phase 3.</p>
+</div>

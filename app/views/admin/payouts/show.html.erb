@@ -1,0 +1,39 @@
+<% page_title "Payout" %>
+<% po = @payout %>
+<%= render "admin/shared/back", path: admin_payouts_path, label: "Vendor payouts" %>
+<%= render Ui::PageHeaderComponent.new(title: "#{po.kind.capitalize} payout · #{inr(po.amount_paise)}", subtitle: "#{po.vendor.name} · booking #{po.assignment.booking.number}", eyebrow: "Finance") do |c| %>
+  <% c.with_actions { status_badge(:payout, po.status) } %>
+<% end %>
+<% steps = [["Due", po.created_at], ["Approved", po.approved_at], ["Paid", po.paid_at], ["Received by vendor", po.received_at]] %>
+<ol class="card mb-6 grid grid-cols-4 text-center text-xs font-semibold">
+  <% steps.each_with_index do |(label, at), i| %>
+    <li class="px-2 py-4 <%= at ? 'text-plum-900' : 'text-slate-400' %>"><span class="mx-auto mb-1 grid h-7 w-7 place-items-center rounded-full <%= at ? 'bg-gradient-to-br from-saffron-500 to-rani-500 text-white' : 'bg-slate-100' %>"><%= at ? icon("check", class: "h-4 w-4", stroke: 3) : i + 1 %></span><%= label %><span class="block font-normal text-slate-400"><%= at&.strftime("%d %b %Y") %></span></li>
+  <% end %>
+</ol>
+<div class="grid gap-6 lg:grid-cols-3">
+  <div class="card card-body lg:col-span-2">
+    <%= render "admin/shared/dl", rows: [["Gross", inr(po.gross_paise)], ["Penalty", po.penalty_paise.positive? ? "−#{inr(po.penalty_paise)} (#{po.penalty_reason})" : "None"], ["Net payable", inr(po.amount_paise)], ["Due on", po.due_on.strftime("%d %b %Y")],
+      ["Assignment total", inr(po.assignment.vendor_total_paise)], ["Terms", "#{po.assignment.advance_pct}% advance · #{po.assignment.balance_terms.humanize}"], ["Bank", "#{po.vendor.bank_account_name} · #{po.vendor.masked_account} · #{po.vendor.bank_ifsc}"],
+      ["UTR", po.utr], ["Approved by", po.approved_by&.name]] %>
+    <% unless po.payable? %><p class="mt-4 rounded-xl bg-rani-50 p-3 text-sm text-rani-700">This balance payout is on hold because the booking is disputed.</p><% end %>
+    <% if po.vendor_invoice.attached? %><p class="mt-4 text-sm">Vendor invoice: <%= link_to po.vendor_invoice.filename.to_s, rails_blob_path(po.vendor_invoice, disposition: "inline"), target: "_blank", class: "font-semibold text-saffron-600" %></p><% end %>
+  </div>
+  <div class="space-y-4">
+    <% if policy(po).approve? %>
+      <%= form_with url: approve_admin_payout_path(po), method: :patch, class: "card card-body space-y-3" do |f| %>
+        <h2 class="font-semibold text-slate-900">Approve payout</h2>
+        <div><%= f.label :penalty_rupees, "Penalty (₹, optional)", class: "label" %><%= f.number_field :penalty_rupees, min: 0, step: 0.01, class: "input" %></div>
+        <div><%= f.label :penalty_reason, "Penalty reason", class: "label" %><%= f.text_field :penalty_reason, class: "input", placeholder: "e.g. 2 days late" %></div>
+        <%= f.submit "Approve", class: "btn btn-success w-full", disabled: !po.payable? %>
+      <% end %>
+    <% elsif policy(po).pay? %>
+      <%= form_with url: pay_admin_payout_path(po), method: :patch, class: "card card-body space-y-3" do |f| %>
+        <h2 class="font-semibold text-slate-900">Record bank transfer</h2>
+        <div><%= f.label :utr, "UTR reference", class: "label" %><%= f.text_field :utr, required: true, class: "input font-mono" %></div>
+        <%= f.submit "Mark paid #{inr(po.amount_paise)}", class: "btn btn-primary w-full" %>
+      <% end %>
+    <% elsif po.paid? %>
+      <div class="card card-body text-sm text-slate-600">Waiting for <%= po.vendor.name %> to confirm receipt in the vendor portal.</div>
+    <% end %>
+  </div>
+</div>

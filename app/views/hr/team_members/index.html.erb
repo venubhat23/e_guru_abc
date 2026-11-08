@@ -1,0 +1,22 @@
+<% page_title "Team & access" %>
+<%= render Ui::PageHeaderComponent.new(title: "Team & access", subtitle: "People in #{Current.company.name} who can use Avighna eGiftMitra.", eyebrow: "People") %>
+<% if @members.any? %>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>Member</th><th>Role</th><th>Last sign-in</th><th></th></tr></thead>
+      <tbody>
+        <% @members.each do |m| %>
+          <tr>
+            <td class="flex items-center gap-3"><span class="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-saffron-400 to-rani-500 text-xs font-bold text-white"><%= m.initials %></span><div><p class="font-semibold text-slate-900"><%= m.name %><%= " (you)" if m == current_user %></p><p class="text-xs text-slate-500"><%= m.email_address %></p></div></td>
+            <td><%= render Ui::BadgeComponent.new(text: m.role_label, tone: m.hr_admin? ? :orange : :gray, dot: false) %></td>
+            <td class="text-xs text-slate-500"><%= time_ago(m.last_sign_in_at) %></td>
+            <td class="text-right"><%= link_to "View", hr_team_member_path(m), class: "btn btn-ghost btn-sm" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <%= pagy_nav_tw(@pagy) %>
+<% else %>
+  <%= render Ui::EmptyStateComponent.new(title: "No team members", icon: "users") %>
+<% end %>

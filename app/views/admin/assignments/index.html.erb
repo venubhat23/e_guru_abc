@@ -1,0 +1,36 @@
+<% page_title "Assignments" %>
+<%= render Ui::PageHeaderComponent.new(title: "Assignments", subtitle: "Every vendor job — SLA countdowns, acceptance and fulfilment progress.", eyebrow: "Operations") %>
+<% if @breached.positive? %>
+  <%= link_to admin_assignments_path(sla: "breached"), class: "mb-5 flex items-center gap-3 rounded-2xl bg-rani-50 px-5 py-3 text-sm font-semibold text-rani-700 ring-1 ring-rani-200" do %><%= icon("clock") %> <%= pluralize(@breached, "assignment") %> past SLA — the SLA job will expire them and reassign; or expire now.<% end %>
+<% end %>
+<%= render "admin/shared/tabs", tabs: Assignment::STATUS_LABELS.select { |k, _| @counts[k].to_i.positive? }, counts: @counts, path_helper: :admin_assignments_path %>
+<% if @assignments.any? %>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>Booking</th><th>Vendor</th><th>Company</th><th class="text-right">Kits</th><th class="text-right">Vendor total</th><th>SLA / progress</th><th>Status</th></tr></thead>
+      <tbody>
+        <% @assignments.each do |a| %>
+          <tr>
+            <td><%= link_to a.booking.number, admin_booking_path(a.booking), class: "font-mono font-semibold text-plum-900 hover:text-saffron-700" %></td>
+            <td><%= link_to a.vendor.name, admin_assignment_path(a), class: "font-medium hover:text-saffron-700" %><span class="block text-xs text-slate-400"><%= a.mode %></span></td>
+            <td><%= a.booking.company.name %></td>
+            <td class="text-right"><%= a.quantity %></td>
+            <td class="text-right tabular-nums"><%= inr(a.vendor_total_paise) %></td>
+            <td class="text-xs">
+              <% if a.offered? %>
+                <span class="<%= a.expires_at.past? ? 'font-semibold text-rani-600' : 'text-amber-700' %>"><%= a.expires_at.past? ? "Breached #{time_ago_in_words(a.expires_at)} ago" : "#{distance_of_time_in_words(Time.current, a.expires_at)} left" %></span>
+              <% else %>
+                <% done = Assignment::LIVE.index(a.status).to_i %>
+                <div class="h-1.5 w-28 overflow-hidden rounded-full bg-slate-100"><div class="h-full rounded-full bg-gradient-to-r from-saffron-500 to-emerald-500" style="width: <%= a.live? ? (done * 100 / 5) : 0 %>%"></div></div>
+              <% end %>
+            </td>
+            <td><%= status_badge(:assignment, a.status, a.status_label) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <%= pagy_nav_tw(@pagy) %>
+<% else %>
+  <%= render Ui::EmptyStateComponent.new(title: "No assignments", icon: "switch") %>
+<% end %>

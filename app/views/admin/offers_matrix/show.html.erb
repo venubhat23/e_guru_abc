@@ -1,0 +1,47 @@
+<% page_title "Offers matrix" %>
+<%= render Ui::PageHeaderComponent.new(title: "Offers matrix", subtitle: "Compare every vendor's offer for one item: price, MOQ, capacity left this week, lead time, regions, terms, rating and margin.", eyebrow: "Supply") %>
+<%= form_with url: admin_offers_matrix_path, method: :get, class: "card card-body mb-5 flex flex-col gap-3 sm:flex-row sm:items-end" do |f| %>
+  <div class="flex-1">
+    <label class="label" for="item">Product or package</label>
+    <select name="item" id="item" class="input" onchange="this.form.requestSubmit()">
+      <optgroup label="Packages"><% @packages.each do |p| %><option value="pkg-<%= p.id %>" <%= "selected" if @item == p %>><%= p.name %></option><% end %></optgroup>
+      <optgroup label="Products"><% @products.each do |p| %><option value="prd-<%= p.id %>" <%= "selected" if @item == p %>><%= p.name %></option><% end %></optgroup>
+    </select>
+  </div>
+  <% if @item %><div class="rounded-xl bg-plum-50 px-4 py-2.5 text-sm"><span class="text-plum-600">HR catalogue price</span> <strong class="text-plum-900"><%= inr(@hr_price) %></strong></div><% end %>
+<% end %>
+<% if @offers.present? %>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>Vendor</th><th class="text-right">Vendor price</th><th class="text-right">MOQ</th><th class="text-right">Capacity left (this week)</th><th class="text-right">Lead time</th><th>Regions</th><th>Payment policy</th><th class="text-right">Rating</th><th class="text-right">Platform margin</th></tr></thead>
+      <tbody>
+        <% @offers.each_with_index do |o, i| %>
+          <% live = o.active && o.vendor.approved? %>
+          <% margin = @hr_price && @hr_price - o.vendor_price_paise %>
+          <% left = Assignment::CapacityChecker.remaining(o, @week) %>
+          <tr class="<%= 'opacity-50' unless live %>">
+            <td>
+              <%= link_to o.vendor.name, admin_vendor_path(o.vendor), class: "font-semibold text-slate-900 hover:text-saffron-700" %>
+              <% if i.zero? && live %><span class="ml-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">LOWEST</span><% end %>
+              <% unless live %><span class="block text-xs text-rani-600"><%= o.vendor.approved? ? "Offer paused" : "Vendor #{o.vendor.status}" %></span><% end %>
+            </td>
+            <td class="text-right font-semibold tabular-nums"><%= inr(o.vendor_price_paise) %></td>
+            <td class="text-right"><%= o.moq %></td>
+            <td class="text-right">
+              <span class="tabular-nums"><%= left %> / <%= o.capacity_per_week %></span>
+              <div class="mt-1 ml-auto h-1.5 w-24 overflow-hidden rounded-full bg-slate-100"><div class="h-full rounded-full <%= left < o.capacity_per_week * 0.2 ? 'bg-rani-500' : 'bg-emerald-500' %>" style="width: <%= (left * 100.0 / o.capacity_per_week).clamp(0, 100).round %>%"></div></div>
+            </td>
+            <td class="text-right"><%= o.lead_time_days %>d</td>
+            <td class="max-w-[14rem] text-xs"><%= o.vendor.regions.map(&:label).join(" · ") %></td>
+            <td class="text-xs"><%= o.payment_policy %></td>
+            <td class="text-right"><span class="inline-flex items-center gap-1"><%= icon("star", class: "h-3.5 w-3.5 text-marigold-500") %><%= o.vendor.rating.to_f %></span></td>
+            <td class="text-right tabular-nums <%= margin.to_i.negative? ? 'text-rani-600' : 'text-emerald-700' %>"><%= margin ? "#{inr(margin)} (#{(margin * 100.0 / @hr_price).round(1)}%)" : "—" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <p class="mt-3 text-xs text-slate-500">Margin is shown against the current HR catalogue price (based on the lowest active offer). Auto-assignment ranks eligible vendors by lowest vendor cost, then rating.</p>
+<% else %>
+  <%= render Ui::EmptyStateComponent.new(title: "No offers for this item yet", icon: "grid") %>
+<% end %>

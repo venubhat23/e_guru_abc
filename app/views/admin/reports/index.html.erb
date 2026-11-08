@@ -1,0 +1,12 @@
+<% page_title "Reports" %>
+<%= render Ui::PageHeaderComponent.new(title: "Reports", subtitle: "Every report exports to CSV for your finance tools.", eyebrow: "Finance") %>
+<div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+  <% icons = { "gmv_by_month" => "calendar", "gmv_by_occasion" => "sparkles", "gmv_by_company" => "building", "gmv_by_vendor" => "briefcase", "vendor_performance" => "star", "lead_conversion" => "funnel" } %>
+  <% @reports.each do |key, title| %>
+    <%= link_to admin_report_path(key), class: "card card-body group transition hover:-translate-y-0.5 hover:shadow-lg" do %>
+      <span class="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-saffron-500 to-rani-500 text-white shadow"><%= icon(icons[key]) %></span>
+      <p class="mt-4 font-semibold text-slate-900 group-hover:text-saffron-700"><%= title %></p>
+      <p class="mt-1 flex items-center gap-1 text-xs text-slate-500">View & export CSV <%= icon("arrow-right", class: "h-3 w-3") %></p>
+    <% end %>
+  <% end %>
+</div>

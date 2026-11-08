@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head><%= render "shared/head" %></head>
+  <body class="h-full bg-cream-50">
+    <%= render "shared/flash" %>
+    <div class="grid min-h-screen lg:grid-cols-2">
+      <div class="relative hidden overflow-hidden bg-plum-950 lg:block">
+        <div class="absolute inset-0 pattern-grid-dark"></div>
+        <div class="absolute -left-24 -top-24 h-96 w-96 rounded-full bg-saffron-500/40 blur-3xl"></div>
+        <div class="absolute -bottom-32 right-0 h-[28rem] w-[28rem] rounded-full bg-rani-600/40 blur-3xl"></div>
+        <div class="relative flex h-full flex-col justify-between p-12 xl:p-16">
+          <%= link_to root_path, class: "flex items-center gap-3" do %>
+            <span class="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-saffron-500 to-rani-500 text-white shadow-xl"><%= icon("gift", class: "h-6 w-6", stroke: 2) %></span>
+            <span class="font-display text-2xl font-semibold text-white">Avighna eGiftMitra</span>
+          <% end %>
+          <div>
+            <div class="relative mb-10 h-56">
+              <div class="absolute left-0 top-6 w-56 rotate-[-6deg] rounded-3xl bg-white/10 p-5 ring-1 ring-white/15 backdrop-blur animate-float">
+                <p class="text-4xl">🪔</p><p class="mt-3 text-sm font-semibold text-white">Diwali hamper</p><p class="text-xs text-plum-200">1,240 employees · 18 cities</p>
+              </div>
+              <div class="absolute left-48 top-0 w-56 rotate-[5deg] rounded-3xl bg-gradient-to-br from-saffron-500 to-rani-500 p-5 shadow-2xl animate-float-slow">
+                <p class="text-4xl">🎉</p><p class="mt-3 text-sm font-semibold text-white">Onboarding kit</p><p class="text-xs text-white/80">Delivered on day one</p>
+              </div>
+            </div>
+            <h2 class="font-display text-4xl font-semibold leading-tight text-white xl:text-5xl">Every employee.<br><span class="text-gradient">Every occasion.</span><br>One dashboard.</h2>
+            <p class="mt-5 max-w-md text-plum-200">HR teams, vendors and our operations crew all work from one place — from booking to doorstep delivery and GST invoice.</p>
+          </div>
+          <p class="text-sm text-plum-300">© <%= Date.current.year %> Avighna eGiftMitra · Made in India 🇮🇳</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-center px-5 py-12 sm:px-10">
+        <div class="w-full max-w-md">
+          <%= link_to root_path, class: "mb-10 flex items-center gap-2 lg:hidden" do %>
+            <span class="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-saffron-500 to-rani-500 text-white"><%= icon("gift", class: "h-5 w-5", stroke: 2) %></span>
+            <span class="font-display text-xl font-semibold text-plum-900">Avighna eGiftMitra</span>
+          <% end %>
+          <%= yield %>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

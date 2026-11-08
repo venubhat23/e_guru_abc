@@ -1,0 +1,7 @@
+<%# locals: (f:) %>
+<div class="flex items-end gap-3" data-nested-row data-persisted="<%= f.object.persisted? %>">
+  <div class="flex-1"><%= f.label :product_id, "Product", class: "label" %><%= f.collection_select :product_id, @products, :id, :name, { include_blank: "Select a product" }, class: "input" %></div>
+  <div class="w-24"><%= f.label :quantity, "Qty", class: "label" %><%= f.number_field :quantity, min: 1, class: "input" %></div>
+  <%= f.hidden_field :_destroy %>
+  <button type="button" class="btn btn-ghost mb-0.5 text-rani-600" data-action="nested-form#remove" aria-label="Remove item"><%= icon("trash", class: "h-4 w-4") %></button>
+</div>

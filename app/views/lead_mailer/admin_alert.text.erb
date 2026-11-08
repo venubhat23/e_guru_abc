@@ -1,0 +1,6 @@
+New lead: <%= @lead.name %> — <%= @lead.company_name %>
+<%= @lead.work_email %> · <%= @lead.phone %>
+Employees: <%= @lead.employee_count || "-" %> · Occasion: <%= @lead.occasion&.name || "-" %>
+<%= @lead.message %>
+
+<%= admin_lead_url(@lead) %>

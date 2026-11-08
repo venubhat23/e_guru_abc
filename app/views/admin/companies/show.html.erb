@@ -1,0 +1,26 @@
+<% page_title @company.name %>
+<%= link_to admin_companies_path, class: "mb-4 inline-flex items-center gap-1 text-sm font-semibold text-slate-500 hover:text-slate-800" do %><%= icon("chevron-left", class: "h-4 w-4") %> All companies<% end %>
+<%= render Ui::PageHeaderComponent.new(title: @company.name, subtitle: [@company.legal_name, @company.state].compact.uniq.join(" · "), eyebrow: "Company") %>
+<div class="grid gap-6 lg:grid-cols-3">
+  <div class="card card-body">
+    <h2 class="font-semibold text-slate-900">Profile</h2>
+    <dl class="mt-4 space-y-3 text-sm">
+      <% [["GSTIN", @company.gstin], ["PAN", @company.pan], ["State", @company.state], ["Payment terms", @company.payment_terms.humanize], ["Markup override", @company.markup_override_pct && "#{@company.markup_override_pct}%"], ["Approval limit", inr(@company.approval_limit_paise)], ["Status", @company.active ? "Active" : "Inactive"]].each do |k, v| %>
+        <div class="flex justify-between gap-3"><dt class="text-slate-500"><%= k %></dt><dd class="text-right font-medium text-slate-800"><%= v.presence || "—" %></dd></div>
+      <% end %>
+    </dl>
+    <% if @lead %><%= link_to "View originating lead →", admin_lead_path(@lead), class: "mt-5 inline-block text-sm font-semibold text-saffron-600" %><% end %>
+  </div>
+  <div class="card lg:col-span-2">
+    <div class="border-b border-slate-100 px-6 py-4"><h2 class="font-semibold text-slate-900">Users</h2></div>
+    <% if @users.any? %>
+      <ul class="divide-y divide-slate-100">
+        <% @users.each do |u| %>
+          <li class="flex items-center gap-3 px-6 py-3"><span class="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-saffron-400 to-rani-500 text-xs font-bold text-white"><%= u.initials %></span><div class="flex-1"><p class="text-sm font-semibold text-slate-900"><%= u.name %></p><p class="text-xs text-slate-500"><%= u.email_address %></p></div><%= render Ui::BadgeComponent.new(text: u.role_label, tone: u.hr_admin? ? :orange : :gray, dot: false) %></li>
+        <% end %>
+      </ul>
+    <% else %>
+      <div class="p-6"><%= render Ui::EmptyStateComponent.new(title: "No users yet", body: "HR user invitations arrive in Phase 3.", icon: "users") %></div>
+    <% end %>
+  </div>
+</div>

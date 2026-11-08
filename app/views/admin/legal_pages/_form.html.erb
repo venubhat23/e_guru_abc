@@ -1,0 +1,24 @@
+<%= form_with model: [:admin, @record], class: "grid gap-6 xl:grid-cols-2", data: { controller: "markdown-preview" } do |f| %>
+  <div class="card card-body space-y-5">
+    <div class="grid gap-5 sm:grid-cols-2">
+      <div><%= f.label :title, class: "label" %><%= f.text_field :title, class: field_classes(@record, :title), required: true %><%= field_error(@record, :title) %></div>
+      <div><%= f.label :slug, "URL slug", class: "label" %><%= f.text_field :slug, class: field_classes(@record, :slug), placeholder: "auto from title" %><%= field_error(@record, :slug) %></div>
+    </div>
+    <div><%= f.label :summary, "Short summary", class: "label" %><%= f.text_area :summary, rows: 2, class: "input" %></div>
+    <div>
+      <%= f.label :body, "Content (Markdown)", class: "label" %>
+      <%= f.text_area :body, rows: 22, class: "#{field_classes(@record, :body)} font-mono text-xs leading-relaxed", data: { markdown_preview_target: "input", action: "input->markdown-preview#render" } %>
+      <p class="hint">Use ## for headings, - for bullet lists, **bold** for emphasis.</p>
+      <%= field_error(@record, :body) %>
+    </div>
+    <div class="grid gap-5 sm:grid-cols-2">
+      <div><%= f.label :effective_on, "Effective date", class: "label" %><%= f.date_field :effective_on, class: "input" %></div>
+      <label class="flex items-center gap-2 self-end pb-2.5 text-sm font-medium text-slate-700"><%= f.check_box :published, class: "checkbox" %> Published</label>
+    </div>
+    <div class="flex gap-2 border-t border-slate-100 pt-5"><%= f.submit "Save page", class: "btn btn-primary" %><%= link_to "Cancel", admin_legal_pages_path, class: "btn btn-ghost" %></div>
+  </div>
+  <div class="card card-body">
+    <p class="text-xs font-semibold uppercase tracking-widest text-slate-400">Live preview</p>
+    <div class="prose-legal mt-2 max-h-[48rem] overflow-y-auto" data-markdown-preview-target="output"><%= markdown(@record.body) %></div>
+  </div>
+<% end %>

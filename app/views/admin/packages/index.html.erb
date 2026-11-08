@@ -1,0 +1,26 @@
+<% page_title "Packages" %>
+<%= render "admin/shared/back", path: admin_catalogue_path, label: "Catalogue" %>
+<%= render Ui::PageHeaderComponent.new(title: "Packages", subtitle: "Curated kits shown to HR by occasion.", eyebrow: "Catalogue") do |c| %>
+  <% c.with_actions { link_to(new_admin_package_path, class: "btn btn-primary") { icon("plus", class: "h-4 w-4", stroke: 2) + " New package" } } %>
+<% end %>
+<%= render "admin/shared/tabs", tabs: @occasions.to_h { [_1.id.to_s, "#{_1.emoji} #{_1.name}"] }, param: :occasion_id, path_helper: :admin_packages_path %>
+<div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>Package</th><th>Occasion</th><th>Items</th><th class="text-right">Min qty</th><th class="text-right">GST</th><th class="text-right">Offers</th><th class="text-right">HR price / kit</th><th>Status</th></tr></thead>
+    <tbody>
+      <% @packages.each do |pkg| %>
+        <tr>
+          <td><%= link_to admin_package_path(pkg), class: "flex items-center gap-3" do %><%= item_emoji_tile(pkg.display_emoji, size: "h-9 w-9 text-lg") %><span class="font-semibold text-slate-900"><%= pkg.name %></span><% end %></td>
+          <td><%= pkg.occasion.name %></td>
+          <td class="max-w-xs truncate text-xs text-slate-500"><%= pkg.package_items.map { _1.product.name }.join(", ") %></td>
+          <td class="text-right"><%= pkg.min_qty %></td>
+          <td class="text-right"><%= pkg.gst_rate.to_i %>%</td>
+          <td class="text-right"><%= pkg.vendor_offers.size %></td>
+          <td class="text-right font-semibold tabular-nums text-plum-900"><%= inr(@calc.catalogue_price(pkg)) %></td>
+          <td><%= active_badge(pkg.active) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<%= pagy_nav_tw(@pagy) %>

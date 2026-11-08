@@ -1,0 +1,12 @@
+<h2 style="margin:0 0 12px;font-size:20px;color:#24103a;">New lead from the website</h2>
+<table cellpadding="6" cellspacing="0" style="width:100%;font-size:14px;">
+  <tr><td style="color:#64748b;">Name</td><td><strong><%= @lead.name %></strong></td></tr>
+  <tr><td style="color:#64748b;">Company</td><td><%= @lead.company_name %></td></tr>
+  <tr><td style="color:#64748b;">Email</td><td><%= @lead.work_email %></td></tr>
+  <tr><td style="color:#64748b;">Phone</td><td><%= @lead.phone %></td></tr>
+  <tr><td style="color:#64748b;">Employees</td><td><%= @lead.employee_count || "—" %></td></tr>
+  <tr><td style="color:#64748b;">Occasion</td><td><%= @lead.occasion&.name || "—" %></td></tr>
+  <tr><td style="color:#64748b;">Budget / employee</td><td><%= inr(@lead.budget_per_employee_paise) %></td></tr>
+</table>
+<% if @lead.message.present? %><p style="background:#faf7fc;border-radius:10px;padding:12px;"><%= @lead.message %></p><% end %>
+<p><a href="<%= admin_lead_url(@lead) %>" style="display:inline-block;background:#24103a;color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none;font-weight:600;">Open in CRM →</a></p>

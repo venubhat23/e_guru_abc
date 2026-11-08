@@ -1,0 +1,26 @@
+#!/bin/bash -e
+
+# Enable jemalloc for reduced memory usage and latency.
+if [ -z "${LD_PRELOAD+x}" ]; then
+    LD_PRELOAD=$(find /usr/lib -name libjemalloc.so.2 -print -quit)
+    export LD_PRELOAD
+fi
+
+# Platforms like Railway route traffic to $PORT. Thruster (HTTP proxy) must listen there
+# and forward to Puma on an internal port.
+if [ -n "${PORT}" ] && [ "${1}" == "./bin/thrust" ]; then
+  export HTTP_PORT="${PORT}"
+  export TARGET_PORT="${PUMA_PORT:-3001}"
+  export PORT="${TARGET_PORT}"
+fi
+
+# If running the rails server then create or migrate existing database
+if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+  ./bin/rails db:prepare
+  # Idempotent sample data (admin, companies, vendors, leads, legal pages). Set SEED_ON_DEPLOY=true.
+  if [ "${SEED_ON_DEPLOY}" == "true" ]; then
+    ./bin/rails db:seed
+  fi
+fi
+
+exec "${@}"

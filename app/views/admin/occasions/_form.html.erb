@@ -1,0 +1,17 @@
+<%= form_with model: [:admin, @record], class: "card card-body max-w-3xl space-y-5" do |f| %>
+  <div class="grid gap-5 sm:grid-cols-2">
+    <div><%= f.label :name, class: "label" %><%= f.text_field :name, class: field_classes(@record, :name), required: true %><%= field_error(@record, :name) %></div>
+    <div><%= f.label :slug, "URL slug", class: "label" %><%= f.text_field :slug, class: field_classes(@record, :slug), placeholder: "auto from name" %><%= field_error(@record, :slug) %></div>
+    <div><%= f.label :emoji, class: "label" %><%= f.text_field :emoji, class: "input", maxlength: 4 %></div>
+    <div><%= f.label :theme, "Card colour", class: "label" %><%= f.select :theme, Occasion::THEMES.map { [_1.humanize, _1] }, {}, class: "input" %></div>
+    <div class="sm:col-span-2"><%= f.label :tagline, class: "label" %><%= f.text_field :tagline, class: "input" %></div>
+    <div class="sm:col-span-2"><%= f.label :description, class: "label" %><%= f.text_area :description, rows: 4, class: "input" %></div>
+    <div class="sm:col-span-2"><%= f.label :highlights_text, "Highlights (one per line)", class: "label" %><%= f.text_area :highlights_text, rows: 4, class: "input" %></div>
+    <div><%= f.label :from_price_rupees, "'From' price per employee (₹)", class: "label" %><%= f.number_field :from_price_rupees, class: "input", min: 0 %><p class="hint">Replaced by live package pricing in Phase 4.</p></div>
+    <div><%= f.label :position, class: "label" %><%= f.number_field :position, class: "input" %></div>
+    <div><%= f.label :season_starts_on, "Season starts", class: "label" %><%= f.date_field :season_starts_on, class: "input" %></div>
+    <div><%= f.label :season_ends_on, "Season ends", class: "label" %><%= f.date_field :season_ends_on, class: "input" %></div>
+  </div>
+  <label class="flex items-center gap-2 text-sm font-medium text-slate-700"><%= f.check_box :active, class: "checkbox" %> Active (visible on website)</label>
+  <div class="flex gap-2 border-t border-slate-100 pt-5"><%= f.submit "Save occasion", class: "btn btn-primary" %><%= link_to "Cancel", admin_occasions_path, class: "btn btn-ghost" %></div>
+<% end %>

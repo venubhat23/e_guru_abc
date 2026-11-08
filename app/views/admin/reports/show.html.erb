@@ -1,0 +1,27 @@
+<% page_title @report.title %>
+<%= render "admin/shared/back", path: admin_reports_path, label: "Reports" %>
+<%= render Ui::PageHeaderComponent.new(title: @report.title, subtitle: "#{@from.strftime('%d %b %Y')} – #{@to.strftime('%d %b %Y')}", eyebrow: "Report") do |c| %>
+  <% c.with_actions { link_to(admin_report_path(@report.key, format: :csv, from: @from, to: @to), class: "btn btn-primary") { icon("download", class: "h-4 w-4") + " Export CSV" } } %>
+<% end %>
+<%= form_with url: admin_report_path(@report.key), method: :get, class: "card card-body mb-5 flex flex-wrap items-end gap-3" do |f| %>
+  <div><%= f.label :from, class: "label" %><%= f.date_field :from, value: @from, class: "input" %></div>
+  <div><%= f.label :to, class: "label" %><%= f.date_field :to, value: @to, class: "input" %></div>
+  <%= f.submit "Apply", class: "btn btn-dark" %>
+<% end %>
+<% if @report.rows.any? %>
+  <% if @report.money.include?(3) && @report.rows.size > 1 %>
+    <div class="card card-body mb-5"><%= column_chart @report.rows.map { [_1[0], _1[3].to_i / 100] }, colors: ["#f96a12"], height: "240px", prefix: "₹", thousands: ",", library: { plugins: { legend: { display: false } } } %></div>
+  <% end %>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><% @report.columns.each_with_index do |c, i| %><th class="<%= 'text-right' if i.positive? %>"><%= c %></th><% end %></tr></thead>
+      <tbody>
+        <% @report.rows.each do |row| %>
+          <tr><% row.each_with_index do |v, i| %><td class="<%= i.zero? ? 'font-semibold text-slate-900' : 'text-right tabular-nums' %>"><%= @report.money.include?(i) ? inr(v.to_i) : v %></td><% end %></tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <%= render Ui::EmptyStateComponent.new(title: "No data in this range", icon: "chart") %>
+<% end %>

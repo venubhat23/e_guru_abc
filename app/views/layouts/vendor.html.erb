@@ -1,0 +1,1 @@
+<%= render layout: "shared/portal_shell", locals: { portal: :vendor, sections: vendor_nav_sections, tenant_name: Current.vendor&.name, accent: "from-emerald-500 to-teal-400" } do %><%= yield %><% end %>

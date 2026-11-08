@@ -1,0 +1,72 @@
+<% page_title "Become a vendor" %>
+<% content_for :dark_hero, "1" %>
+<% meta_description "Sell your gifts to India's top companies. Join Avighna eGiftMitra as a verified vendor — get bulk orders, advance payments and predictable payouts." %>
+<section class="relative overflow-hidden bg-[#0c2421] pt-32 pb-24 text-white sm:pt-40">
+  <div class="absolute inset-0 pattern-grid-dark"></div>
+  <div class="absolute -right-32 -top-32 h-[32rem] w-[32rem] rounded-full bg-emerald-500/25 blur-3xl"></div>
+  <div class="absolute -left-20 bottom-0 h-80 w-80 rounded-full bg-marigold-400/20 blur-3xl"></div>
+  <div class="relative mx-auto grid max-w-7xl gap-14 px-6 lg:grid-cols-2">
+    <div class="animate-fade-up">
+      <span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold ring-1 ring-white/15"><%= icon("briefcase", class: "h-4 w-4") %> For makers, brands & gifting suppliers</span>
+      <h1 class="mt-6 font-display text-5xl font-semibold leading-tight sm:text-6xl">Grow with <span class="bg-gradient-to-r from-emerald-300 to-marigold-300 bg-clip-text text-transparent">bulk corporate orders</span></h1>
+      <p class="mt-6 max-w-xl text-lg text-emerald-50/80">List what you make once. We bring you confirmed orders from companies across India — with recipient lists, branding files and advance payments ready.</p>
+      <div class="mt-10 grid gap-4 sm:grid-cols-2">
+        <% [["banknotes", "Advance payments", "Get an agreed advance when you accept an order."], ["clipboard", "Ready-to-ship orders", "Recipients, sizes, card messages — all in one place."], ["truck", "Your regions only", "Serve the states, cities and pincodes you choose."], ["trending-up", "Predictable payouts", "Clear due dates and a full earnings statement."]].each do |ic, t, b| %>
+          <div class="rounded-2xl bg-white/5 p-5 ring-1 ring-white/10"><span class="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-400 shadow-lg"><%= icon(ic, class: "h-5 w-5") %></span><p class="mt-3 font-semibold"><%= t %></p><p class="mt-1 text-sm text-emerald-50/70"><%= b %></p></div>
+        <% end %>
+      </div>
+    </div>
+
+    <div id="apply">
+      <%= form_with model: @signup, url: vendor_signup_path, scope: :vendor_signup, class: "rounded-3xl bg-white p-6 text-slate-800 shadow-2xl sm:p-8", data: { turbo: false } do |f| %>
+        <h2 class="font-display text-2xl font-semibold text-plum-950">Apply to become a vendor</h2>
+        <p class="mt-1 text-sm text-slate-500">Takes 2 minutes. You'll complete KYC after verifying your email.</p>
+        <% if @signup.errors[:base].any? %><div class="mt-4 rounded-xl bg-rani-50 p-3 text-sm text-rani-700"><%= @signup.errors[:base].to_sentence %></div><% end %>
+        <div class="hidden" aria-hidden="true"><input type="text" name="vendor_signup[website]" tabindex="-1" autocomplete="off"></div>
+        <div class="mt-6 grid gap-4 sm:grid-cols-2">
+          <div class="sm:col-span-2"><%= f.label :business_name, class: "label" %><%= f.text_field :business_name, class: field_classes(@signup, :business_name), required: true %><%= field_error(@signup, :business_name) %></div>
+          <div><%= f.label :name, "Your name", class: "label" %><%= f.text_field :name, class: field_classes(@signup, :name), required: true, autocomplete: "name" %><%= field_error(@signup, :name) %></div>
+          <div><%= f.label :phone, class: "label" %><%= f.telephone_field :phone, class: field_classes(@signup, :phone), required: true, placeholder: "+91 98765 43210" %><%= field_error(@signup, :phone) %></div>
+          <div><%= f.label :email_address, "Business email", class: "label" %><%= f.email_field :email_address, class: field_classes(@signup, :email_address), required: true, autocomplete: "email" %><%= field_error(@signup, :email_address) %></div>
+          <div><%= f.label :city, class: "label" %><%= f.text_field :city, class: "input", placeholder: "e.g. Jaipur" %></div>
+          <div class="sm:col-span-2"><%= f.label :password, class: "label" %><%= f.password_field :password, class: field_classes(@signup, :password), required: true, minlength: 8, autocomplete: "new-password" %><p class="hint">At least 8 characters.</p><%= field_error(@signup, :password) %></div>
+        </div>
+        <label class="mt-5 flex items-start gap-3 text-sm text-slate-600">
+          <%= f.check_box :terms, class: "checkbox mt-0.5" %>
+          <span>I agree to the <%= link_to "Vendor Terms", legal_page_path("vendor-terms"), class: "font-semibold text-emerald-700 underline", target: "_blank" %> and <%= link_to "Privacy Policy", legal_page_path("privacy-policy"), class: "font-semibold text-emerald-700 underline", target: "_blank" %>.</span>
+        </label>
+        <%= field_error(@signup, :terms) %>
+        <%= f.submit "Create vendor account", class: "btn btn-lg mt-6 w-full bg-gradient-to-r from-emerald-600 to-teal-500 text-white shadow-lg shadow-emerald-600/30 hover:-translate-y-0.5" %>
+        <p class="mt-4 text-center text-sm text-slate-500">Already a partner? <%= link_to "Sign in", new_session_path, class: "font-semibold text-emerald-700" %></p>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section class="py-24" data-controller="reveal">
+  <div class="mx-auto max-w-7xl px-6">
+    <div class="mx-auto max-w-2xl text-center" data-reveal-target="item">
+      <p class="text-sm font-semibold uppercase tracking-widest text-emerald-700">Onboarding</p>
+      <h2 class="mt-3 font-display text-4xl font-semibold text-plum-950">What you'll need</h2>
+    </div>
+    <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <% [["document", "GSTIN & PAN", "Valid GST registration and business PAN."], ["shield", "FSSAI licence", "Required only if you supply food items."], ["banknotes", "Bank account", "For advances and payouts. Stored encrypted."], ["map-pin", "Warehouse & regions", "Where you ship from and the areas you serve."]].each_with_index do |(ic, t, b), i| %>
+        <div class="card card-body text-center" style="transition-delay: <%= i * 80 %>ms" data-reveal-target="item">
+          <span class="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-emerald-50 text-emerald-700"><%= icon(ic, class: "h-6 w-6") %></span>
+          <p class="mt-4 font-semibold text-slate-900"><%= t %></p><p class="mt-1 text-sm text-slate-500"><%= b %></p>
+        </div>
+      <% end %>
+    </div>
+    <% if @faqs.any? %>
+      <div class="mx-auto mt-20 max-w-3xl space-y-3">
+        <h2 class="mb-6 text-center font-display text-3xl font-semibold text-plum-950">Vendor FAQ</h2>
+        <% @faqs.each do |faq| %>
+          <details class="group rounded-2xl bg-white p-5 ring-1 ring-slate-200/70 open:shadow-lg">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-plum-900 [&::-webkit-details-marker]:hidden"><%= faq.question %><span class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-emerald-50 text-emerald-700 transition group-open:rotate-45"><%= icon("plus", class: "h-4 w-4", stroke: 2.2) %></span></summary>
+            <p class="mt-3 text-sm leading-relaxed text-slate-600"><%= faq.answer %></p>
+          </details>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</section>

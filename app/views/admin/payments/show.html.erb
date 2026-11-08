@@ -1,0 +1,31 @@
+<% page_title "Payment" %>
+<% p = @payment %>
+<%= render "admin/shared/back", path: admin_payments_path, label: "Payments" %>
+<%= render Ui::PageHeaderComponent.new(title: inr(p.amount_paise), subtitle: "#{p.method_label} for booking #{p.booking.number} · #{p.booking.company.name}", eyebrow: "Payment") do |c| %>
+  <% c.with_actions { status_badge(:payment, p.status) } %>
+<% end %>
+<div class="grid gap-6 lg:grid-cols-3">
+  <div class="card card-body lg:col-span-2">
+    <%= render "admin/shared/dl", rows: [["Booking total", inr(p.booking.total_paise)], ["Balance due", inr(p.booking.balance_due_paise)], ["Reference / UTR", p.reference], ["Razorpay order", p.razorpay_order_id], ["Razorpay payment", p.razorpay_payment_id],
+      ["Gateway fee", inr(p.gateway_fee_paise)], ["Verified by", p.verified_by&.name], ["Verified at", p.verified_at&.strftime("%d %b %Y %H:%M")], ["Notes", p.notes]] %>
+    <% if p.proof.attached? %>
+      <%= link_to rails_blob_path(p.proof, disposition: "inline"), target: "_blank", class: "mt-5 flex items-center gap-3 rounded-xl p-3 ring-1 ring-slate-200 hover:bg-saffron-50" do %>
+        <span class="grid h-10 w-10 place-items-center rounded-lg bg-rani-50 text-rani-600"><%= icon("document") %></span><span><span class="block text-sm font-medium">Payment proof: <%= p.proof.filename %></span><span class="text-xs text-slate-500">Open to verify against your bank statement</span></span>
+      <% end %>
+    <% end %>
+  </div>
+  <% if policy(p).verify? %>
+    <div class="space-y-4">
+      <div class="card card-body">
+        <h2 class="font-semibold text-slate-900">Verify payment</h2>
+        <p class="mt-1 text-sm text-slate-500">Confirm the amount has reached the bank account. The booking moves to paid and then into vendor assignment.</p>
+        <%= button_to "Verify #{inr(p.amount_paise)}", verify_admin_payment_path(p), method: :patch, class: "btn btn-success mt-4 w-full", form: { data: { turbo_confirm: "Confirm funds received?" } } %>
+      </div>
+      <%= form_with url: reject_admin_payment_path(p), method: :patch, class: "card card-body space-y-3" do |f| %>
+        <h2 class="font-semibold text-slate-900">Reject</h2>
+        <%= f.text_area :notes, rows: 2, required: true, placeholder: "e.g. Amount not received / proof unreadable", class: "input" %>
+        <%= f.submit "Mark failed", class: "btn btn-danger w-full" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
