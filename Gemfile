@@ -67,7 +67,7 @@ gem "view_component"
 gem "pagy", "~> 9.3"
 gem "prawn"
 gem "prawn-table"
-gem "image_processing", "~> 1.2"
+gem "image_processing", "~> 2.2"
 gem "aws-sdk-s3", require: false
 gem "razorpay"
 gem "roo"
