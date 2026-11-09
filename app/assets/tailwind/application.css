@@ -5,7 +5,7 @@
 
 @theme {
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 
   --color-cream-50: #fffdf8;
   --color-cream-100: #fff8ec;
@@ -99,6 +99,7 @@
   html, body { overflow-x: clip; }
   html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
   body { @apply font-sans text-slate-800; }
+  .font-display { letter-spacing: -0.025em; }
   :focus-visible { @apply outline-2 outline-offset-2 outline-saffron-500; }
   [x-cloak] { display: none; }
   @media (prefers-reduced-motion: reduce) {
@@ -162,15 +163,15 @@
   .tilt { transform-style: preserve-3d; transition: transform .25s ease-out; will-change: transform; }
 
   .range-gift { @apply h-2 w-full cursor-pointer appearance-none rounded-full bg-plum-100; }
-  .range-gift::-webkit-slider-thumb { @apply h-6 w-6 appearance-none rounded-full bg-white shadow-lg ring-4 ring-saffron-500; }
-  .range-gift::-moz-range-thumb { @apply h-6 w-6 rounded-full border-0 bg-white shadow-lg ring-4 ring-saffron-500; }
+  .range-gift::-webkit-slider-thumb { @apply h-6 w-6 appearance-none rounded-full bg-white shadow-lg ring-4 ring-plum-950; }
+  .range-gift::-moz-range-thumb { @apply h-6 w-6 rounded-full border-0 bg-white shadow-lg ring-4 ring-plum-950; }
 
   .noise { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E"); mix-blend-mode: soft-light; opacity: .35; }
 
-  .chip { @apply inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-white px-4 py-2.5 text-sm font-semibold text-plum-800 ring-1 ring-plum-100 transition duration-200 hover:-translate-y-0.5 hover:ring-saffron-300 hover:shadow-md; }
-  .chip[aria-pressed="true"] { @apply bg-gradient-to-r from-saffron-500 to-rani-500 text-white ring-transparent shadow-lg shadow-rani-500/25; }
-  .qb-step { @apply grid h-8 w-8 shrink-0 place-items-center rounded-full bg-plum-100 text-xs font-bold text-plum-500 transition duration-300; }
-  .qb-step.is-done { @apply bg-gradient-to-br from-saffron-500 to-rani-500 text-white shadow-md; }
+  .chip { @apply inline-flex cursor-pointer items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 transition duration-200 hover:ring-slate-400; }
+  .chip[aria-pressed="true"] { @apply bg-plum-950 text-white ring-plum-950 shadow-md; }
+  .qb-step { @apply grid h-7 w-7 shrink-0 place-items-center rounded-full bg-slate-100 text-xs font-bold text-slate-500 transition duration-300; }
+  .qb-step.is-done { @apply bg-plum-950 text-white; }
 
   .pattern-dots { background-image: radial-gradient(rgba(249,106,18,.18) 1px, transparent 1px); background-size: 22px 22px; }
   .pattern-grid-dark { background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px); background-size: 40px 40px; }

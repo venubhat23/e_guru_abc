@@ -1,26 +1,20 @@
 <%# locals: (occasion:, delay: 0) %>
-<% themes = {
-  "saffron" => "from-saffron-400 via-saffron-500 to-rani-500",
-  "rani" => "from-rani-400 via-rani-500 to-plum-600",
-  "plum" => "from-plum-500 via-plum-700 to-plum-900",
-  "emerald" => "from-emerald-400 via-teal-500 to-sky-600",
-  "sky" => "from-sky-400 via-indigo-500 to-plum-600"
+<% tints = {
+  "saffron" => "from-saffron-50 to-marigold-100 text-saffron-700",
+  "rani" => "from-rani-50 to-rani-100 text-rani-700",
+  "plum" => "from-plum-50 to-plum-100 text-plum-700",
+  "emerald" => "from-emerald-50 to-teal-100 text-emerald-700",
+  "sky" => "from-sky-50 to-indigo-100 text-indigo-700"
 } %>
-<%= link_to occasion_path(occasion), class: "group relative flex min-h-[19rem] flex-col overflow-hidden rounded-3xl bg-gradient-to-br #{themes[occasion.theme]} p-6 text-white shadow-xl shadow-plum-900/10 transition duration-500 hover:-translate-y-2 hover:shadow-2xl", style: "transition-delay: #{delay}ms", data: { reveal_target: "item", track: "Occasion card: #{occasion.name}" } do %>
-  <div class="absolute -right-10 -top-10 h-44 w-44 rounded-full bg-white/15 blur-2xl transition duration-700 group-hover:scale-150"></div>
-  <div class="absolute inset-0 opacity-20 [background-image:radial-gradient(white_1px,transparent_1px)] [background-size:18px_18px]"></div>
-  <div class="relative flex items-start justify-between">
-    <span class="text-5xl drop-shadow-lg transition duration-500 group-hover:scale-110 group-hover:-rotate-6"><%= occasion.emoji %></span>
-    <% if occasion.in_season? %><span class="rounded-full bg-white/25 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide backdrop-blur">In season</span><% end %>
+<%= link_to occasion_path(occasion), class: "group flex flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-900/10 hover:ring-slate-300", style: "transition-delay: #{delay}ms", data: { reveal_target: "item", track: "Occasion card: #{occasion.name}" } do %>
+  <div class="relative grid h-36 place-items-center bg-gradient-to-br <%= tints[occasion.theme] || tints["saffron"] %>">
+    <div class="absolute inset-0 opacity-40 [background-image:radial-gradient(currentColor_1px,transparent_1px)] [background-size:16px_16px] [mask-image:linear-gradient(to_bottom,black,transparent)]"></div>
+    <span class="relative text-6xl transition duration-500 group-hover:scale-110"><%= occasion.emoji %></span>
+    <% if occasion.in_season? %><span class="absolute right-3 top-3 rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-sm ring-1 ring-slate-200">In season</span><% end %>
   </div>
-  <div class="relative mt-auto">
-    <h3 class="font-display text-2xl font-semibold"><%= occasion.name %></h3>
-    <p class="mt-1 text-sm text-white/85"><%= occasion.tagline %></p>
-    <div class="mt-5 flex items-center justify-between rounded-2xl bg-white/15 px-4 py-3 backdrop-blur">
-      <p class="text-[11px] font-medium uppercase tracking-wide text-white/75">Custom pricing
-        <span class="block text-lg font-bold normal-case tracking-normal text-white">Get a quote</span>
-        <span class="block normal-case tracking-normal text-white/75">reply within 24h</span></p>
-      <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-plum-900 transition group-hover:translate-x-1"><%= icon("arrow-right", class: "h-4 w-4", stroke: 2.2) %></span>
-    </div>
+  <div class="flex flex-1 flex-col p-5">
+    <h3 class="text-lg font-bold tracking-tight text-slate-900"><%= occasion.name %></h3>
+    <p class="mt-1 flex-1 text-sm leading-relaxed text-slate-600"><%= occasion.tagline %></p>
+    <p class="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-slate-900 group-hover:text-saffron-600">Get a quote <%= icon("arrow-right", class: "h-4 w-4 transition group-hover:translate-x-1", stroke: 2) %></p>
   </div>
 <% end %>
