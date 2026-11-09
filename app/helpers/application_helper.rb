@@ -74,9 +74,9 @@ module ApplicationHelper
 
   def pagy_nav_tw(pagy)
     return "" if pagy.pages <= 1
-    tag.nav(class: "mt-6 flex items-center justify-between gap-3", aria: { label: "Pagination" }) do
+    tag.nav(class: "mt-6 flex flex-col items-center justify-between gap-3 sm:flex-row", aria: { label: "Pagination" }) do
       info = tag.p(class: "text-sm text-slate-500") { "Showing #{pagy.from}–#{pagy.to} of #{pagy.count}" }
-      links = tag.div(class: "flex items-center gap-1") do
+      links = tag.div(class: "flex flex-wrap items-center justify-center gap-1") do
         items = []
         items << pagy_link(pagy, pagy.prev, icon("chevron-left", class: "h-4 w-4"), "Previous")
         pagy.series.each do |item|

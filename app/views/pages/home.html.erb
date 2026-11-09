@@ -1,7 +1,7 @@
 <% page_title "Corporate gifting, managed end-to-end" %>
 
 <%# =============================== HERO SLIDER =============================== %>
-<section class="relative mt-[103px] h-[34rem] overflow-hidden bg-plum-950 sm:h-[38rem] lg:h-[40rem]" data-controller="slider" data-action="mouseenter->slider#pause mouseleave->slider#play" aria-roledescription="carousel" aria-label="Featured collections">
+<section class="relative mt-[103px] h-[42rem] overflow-hidden bg-plum-950 sm:h-[38rem] lg:h-[40rem]" data-controller="slider" data-action="mouseenter->slider#pause mouseleave->slider#play" aria-roledescription="carousel" aria-label="Featured collections">
   <% slides = [
     { img: "hero-luxe", eyebrow: "Diwali 2026 · Now booking", title: "Gifts that light up", accent: "every home.", body: "Premium festive hampers with sweets, dry fruits and decor — branded with your logo and delivered to every employee across India.", cta: ["Explore Diwali gifting", occasion_path("diwali")] },
     { img: "onboarding", eyebrow: "Employee welcome kits", title: "First impressions", accent: "that last.", body: "Backpacks, bottles, diaries and tees in one branded box — waiting on day one, wherever your new joiners are.", cta: ["See onboarding kits", occasion_path("onboarding")] },
@@ -11,7 +11,7 @@
     <div class="absolute inset-0 transition-opacity duration-1000 <%= i.zero? ? "opacity-100" : "opacity-0 pointer-events-none" %>" data-slider-target="slide" role="group" aria-roledescription="slide" aria-label="<%= i + 1 %> of <%= slides.size %>">
       <img src="<%= stock_image_url(s[:img], w: 1920) %>" alt="" <%= i.zero? ? 'fetchpriority=high' : 'loading=lazy' %> class="absolute inset-0 h-full w-full object-cover transition-transform duration-[7000ms] ease-out" data-zoom>
       <div class="absolute inset-0 bg-gradient-to-r from-plum-950/95 via-plum-950/70 to-plum-950/10"></div>
-      <div class="relative mx-auto flex h-full max-w-7xl items-center px-6">
+      <div class="relative mx-auto flex h-full max-w-7xl items-center px-6 pb-20 sm:pb-0">
         <div class="max-w-xl text-white">
           <p class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-widest text-marigold-300 ring-1 ring-white/20 backdrop-blur"><span class="h-1.5 w-1.5 rounded-full bg-marigold-300"></span><%= s[:eyebrow] %></p>
           <<%= i.zero? ? "h1" : "h2" %> class="mt-6 font-display text-5xl font-bold leading-[1.05] sm:text-6xl lg:text-7xl"><%= s[:title] %> <span class="block italic text-marigold-300"><%= s[:accent] %></span></<%= i.zero? ? "h1" : "h2" %>>
@@ -24,13 +24,13 @@
       </div>
     </div>
   <% end %>
-  <div class="absolute inset-x-0 bottom-8 mx-auto flex max-w-7xl items-center justify-between px-6">
+  <div class="absolute inset-x-0 bottom-14 mx-auto flex max-w-7xl items-center justify-between px-6 sm:bottom-8">
     <div class="flex gap-2">
       <% slides.size.times do |i| %>
         <button type="button" class="h-1.5 w-8 rounded-full bg-white/30 transition-all aria-[current=true]:w-14 aria-[current=true]:bg-white" data-slider-target="dot" data-index="<%= i %>" data-action="slider#go" aria-label="Show slide <%= i + 1 %>"></button>
       <% end %>
     </div>
-    <div class="flex gap-2">
+    <div class="hidden gap-2 sm:flex">
       <button type="button" class="grid h-11 w-11 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/30 backdrop-blur transition hover:bg-white hover:text-plum-950" data-action="slider#prev" aria-label="Previous slide"><%= icon("chevron-left", class: "h-5 w-5", stroke: 2) %></button>
       <button type="button" class="grid h-11 w-11 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/30 backdrop-blur transition hover:bg-white hover:text-plum-950" data-action="slider#next" aria-label="Next slide"><%= icon("chevron-right", class: "h-5 w-5", stroke: 2) %></button>
     </div>
@@ -39,7 +39,7 @@
 
 <%# =============================== VALUE STRIP =============================== %>
 <section class="relative z-10 mx-auto -mt-10 max-w-6xl px-6">
-  <div class="grid grid-cols-2 gap-px overflow-hidden rounded-2xl bg-slate-200 shadow-xl shadow-plum-950/10 ring-1 ring-slate-200 lg:grid-cols-4">
+  <div class="grid grid-cols-1 gap-px overflow-hidden rounded-2xl bg-slate-200 min-[420px]:grid-cols-2 shadow-xl shadow-plum-950/10 ring-1 ring-slate-200 lg:grid-cols-4">
     <% [["star", "Premium quality", "Curated, quality-checked"], ["palette", "Custom branding", "Logo, print & engraving"], ["truck", "Pan-India delivery", "19,000+ pincodes"], ["receipt", "GST-compliant", "One consolidated invoice"]].each do |ic, t, sub| %>
       <div class="flex items-center gap-3 bg-white p-5">
         <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-saffron-50 text-saffron-600"><%= icon(ic, class: "h-5 w-5") %></span>

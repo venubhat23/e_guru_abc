@@ -25,6 +25,7 @@
   </div>
   <div class="card lg:col-span-2">
     <div class="border-b border-slate-100 px-6 py-4"><h2 class="font-semibold text-slate-900">Vendor offers (<%= @offers.size %>)</h2></div>
+    <div class="overflow-x-auto">
     <table class="table">
       <thead><tr><th>Vendor</th><th class="text-right">Price</th><th class="text-right">MOQ</th><th class="text-right">Lead</th><th>Regions</th><th>Terms</th></tr></thead>
       <tbody>
@@ -40,5 +41,6 @@
         <% end %>
       </tbody>
     </table>
+    </div>
   </div>
 </div>

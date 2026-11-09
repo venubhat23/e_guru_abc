@@ -28,6 +28,7 @@
   <div class="card lg:col-span-2">
     <div class="border-b border-slate-100 px-6 py-4"><h2 class="font-semibold text-slate-900">Vendor offers & resulting price</h2></div>
     <% if @offers.any? %>
+      <div class="overflow-x-auto">
       <table class="table">
         <thead><tr><th>Vendor</th><th class="text-right">Vendor price</th><th class="text-right">HR price</th><th class="text-right">Margin</th><th class="text-right">Lead</th><th>Status</th></tr></thead>
         <tbody>
@@ -44,6 +45,7 @@
           <% end %>
         </tbody>
       </table>
+      </div>
       <% b = @calc.breakdown(@offers.first.vendor_price_paise, product: @product) %>
       <p class="border-t border-slate-100 px-6 py-3 text-xs text-slate-500">Markup <strong><%= b.markup_pct.to_f %>%</strong> from <strong><%= b.markup_source %></strong> · rounded up to nearest ₹<%= Setting[:price_rounding_step_rupees] %></p>
     <% else %>

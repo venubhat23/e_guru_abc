@@ -20,6 +20,7 @@
   </div>
   <div class="card lg:col-span-2">
     <div class="border-b border-slate-100 px-6 py-4"><h2 class="font-semibold text-slate-900">Recipients</h2></div>
+    <div class="overflow-x-auto">
     <table class="table">
       <thead><tr><th>Name</th><th>Address</th><th>Size</th><th>Tracking</th><th>Status</th></tr></thead>
       <tbody>
@@ -28,6 +29,7 @@
         <% end %>
       </tbody>
     </table>
+    </div>
     <% if @recipients.empty? %><p class="p-6 text-sm text-slate-500">Recipients were released when this assignment ended.</p><% end %>
   </div>
 </div>

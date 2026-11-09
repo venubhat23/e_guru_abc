@@ -38,7 +38,8 @@
     </div>
   </div>
   <% steps = [["Submitted", b.submitted_at], ["Paid", b.paid_at], ["Assigned", b.assignments.minimum(:created_at)], ["Confirmed", b.confirmed_at], ["Dispatched", b.assignments.maximum(:dispatched_at)], ["Delivered", b.delivered_at], ["Completed", b.completed_at]] %>
-  <ol class="grid grid-cols-7 border-t border-slate-100 text-center text-[11px] font-semibold sm:text-xs">
+  <div class="overflow-x-auto border-t border-slate-100">
+  <ol class="grid min-w-[36rem] grid-cols-7 text-center text-[11px] font-semibold sm:text-xs">
     <% steps.each_with_index do |(label, at), i| %>
       <li class="px-1 py-3 <%= at ? 'text-plum-900' : 'text-slate-400' %>">
         <span class="mx-auto mb-1 grid h-6 w-6 place-items-center rounded-full <%= at ? 'bg-gradient-to-br from-saffron-500 to-rani-500 text-white' : 'bg-slate-100' %>"><%= at ? icon("check", class: "h-3.5 w-3.5", stroke: 3) : i + 1 %></span>
@@ -46,6 +47,7 @@
       </li>
     <% end %>
   </ol>
+  </div>
   <% if b.cancelled? || b.disputed? || b.pending_approval? %>
     <div class="rounded-b-2xl border-t px-6 py-3 text-sm <%= b.pending_approval? ? 'border-amber-100 bg-amber-50 text-amber-800' : 'border-rani-100 bg-rani-50 text-rani-700' %>">
       <%= b.cancelled? ? "Cancelled: #{b.cancel_reason}" : b.disputed? ? "Disputed: #{b.dispute_reason}" : "Waiting for an HR admin at #{b.company.name} to approve (above their #{inr(b.company.approval_limit_paise)} approval limit)." %>
