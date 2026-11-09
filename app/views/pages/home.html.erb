@@ -117,6 +117,18 @@
   </a>
 </section>
 
+<%# ---------------- TRUST BAND ---------------- %>
+<section class="border-t border-plum-100 bg-white py-10" aria-label="Industries we serve">
+  <div class="mx-auto flex max-w-7xl flex-col items-center gap-6 px-6 lg:flex-row lg:justify-between">
+    <p class="shrink-0 text-xs font-semibold uppercase tracking-[.2em] text-slate-400">Built for People teams across</p>
+    <ul class="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+      <% [["globe", "IT & SaaS"], ["banknotes", "BFSI"], ["shield", "Pharma & Healthcare"], ["cube", "Manufacturing"], ["bolt", "Startups"], ["building", "Consulting"]].each do |ic, name| %>
+        <li class="flex items-center gap-2 text-base font-semibold text-slate-400 grayscale transition hover:text-plum-800"><%= icon(ic, class: "h-5 w-5") %><%= name %></li>
+      <% end %>
+    </ul>
+  </div>
+</section>
+
 <%# ---------------- CATEGORY MARQUEE ---------------- %>
 <section class="border-y border-plum-100 bg-white py-6" aria-label="Gift categories">
   <div class="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
@@ -300,9 +312,79 @@
           <p class="mt-1.5 text-sm leading-relaxed text-slate-600"><%= body %></p>
         </div>
       <% end %>
-      <div class="flex flex-col justify-between rounded-3xl bg-gradient-to-br from-saffron-500 to-rani-500 p-7 text-white shadow-xl shadow-rani-500/20" data-reveal-target="item">
-        <p class="font-display text-xl leading-snug">"We gifted 1,800 employees across 22 cities for Diwali without a single spreadsheet."</p>
-        <p class="mt-4 text-sm font-semibold text-white/85">— Head of People, a Bengaluru fintech</p>
+      <div class="relative flex flex-col items-start justify-between gap-6 overflow-hidden rounded-3xl bg-gradient-to-br from-saffron-500 to-rani-500 p-8 text-white shadow-xl shadow-rani-500/20 md:col-span-3 md:flex-row md:items-center md:p-10" data-reveal-target="item">
+        <span class="pointer-events-none absolute -left-2 -top-10 font-display text-[10rem] leading-none text-white/15">“</span>
+        <div class="relative">
+          <p class="max-w-3xl font-display text-2xl leading-snug sm:text-3xl">We gifted 1,800 employees across 22 cities for Diwali without a single spreadsheet.</p>
+          <p class="mt-4 text-sm font-semibold text-white/85">— Head of People, a Bengaluru fintech</p>
+        </div>
+        <%= link_to new_contact_path, class: "btn btn-lg relative shrink-0 bg-white text-plum-900 shadow-xl hover:-translate-y-0.5", data: { track: "Why us: Get a quote" } do %>Get a quote <%= icon("arrow-right", class: "h-4 w-4", stroke: 2.2) %><% end %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# ---------------- ENTERPRISE ---------------- %>
+<section id="enterprise" class="relative scroll-mt-24 overflow-hidden bg-gradient-to-b from-cream-50 to-white py-24" data-controller="reveal">
+  <div class="mx-auto grid max-w-7xl items-center gap-16 px-6 lg:grid-cols-2">
+    <div data-reveal-target="item">
+      <p class="text-sm font-semibold uppercase tracking-widest text-saffron-600">Enterprise-ready</p>
+      <h2 class="mt-3 font-display text-4xl font-semibold tracking-tight text-plum-950 sm:text-5xl">The control finance wants. The ease HR deserves.</h2>
+      <p class="mt-5 text-lg text-slate-600">Every order, recipient and rupee is visible in one HR portal — so gifting at scale stays auditable, on budget and on time.</p>
+      <dl class="mt-10 grid gap-6 sm:grid-cols-2">
+        <% [
+          ["users", "Role-based portals", "Separate, secure access for HR, finance approvers and our vendor network."],
+          ["clipboard", "Full audit trail", "Every change to an order is logged with who, what and when."],
+          ["receipt", "One consolidated invoice", "GST-compliant tax invoice with CGST/SGST or IGST by place of supply."],
+          ["lock", "Employee data protected", "Addresses are used only for delivery and never shared beyond fulfilment."]
+        ].each do |ic, title, body| %>
+          <div class="flex gap-4">
+            <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-plum-900 text-marigold-300 shadow-lg shadow-plum-900/20"><%= icon(ic, class: "h-5 w-5") %></span>
+            <div><dt class="font-semibold text-slate-900"><%= title %></dt><dd class="mt-1 text-sm leading-relaxed text-slate-600"><%= body %></dd></div>
+          </div>
+        <% end %>
+      </dl>
+      <div class="mt-10 flex flex-col gap-3 sm:flex-row">
+        <%= link_to new_contact_path, class: "btn btn-dark btn-lg group", data: { track: "Enterprise: Request a walkthrough" } do %>Request a walkthrough <%= icon("arrow-right", class: "h-4 w-4 transition group-hover:translate-x-1", stroke: 2.2) %><% end %>
+      </div>
+    </div>
+
+    <%# Illustrative HR dashboard mock-up %>
+    <div class="relative" aria-hidden="true" data-reveal-target="item" data-controller="tilt" data-tilt-max-value="6" data-action="mousemove->tilt#move mouseleave->tilt#leave">
+      <div class="absolute -inset-8 rounded-[3rem] bg-gradient-to-br from-saffron-200/50 via-rani-200/40 to-plum-200/50 blur-3xl"></div>
+      <div class="tilt relative overflow-hidden rounded-3xl bg-white shadow-2xl shadow-plum-900/20 ring-1 ring-slate-200" data-tilt-target="card">
+        <div class="flex items-center gap-2 border-b border-slate-100 bg-slate-50 px-4 py-3">
+          <span class="h-3 w-3 rounded-full bg-rose-400"></span><span class="h-3 w-3 rounded-full bg-amber-400"></span><span class="h-3 w-3 rounded-full bg-emerald-400"></span>
+          <span class="ml-3 flex-1 rounded-md bg-white px-3 py-1 text-[11px] text-slate-400 ring-1 ring-slate-200">HR portal · Diwali 2026</span>
+        </div>
+        <div class="grid grid-cols-3 gap-3 p-5">
+          <% [["Recipients", "1,840", "text-plum-900"], ["Delivered", "1,712", "text-emerald-600"], ["In transit", "128", "text-saffron-600"]].each do |label, val, color| %>
+            <div class="rounded-2xl bg-slate-50 p-3 ring-1 ring-slate-100">
+              <p class="text-[10px] font-semibold uppercase tracking-wide text-slate-400"><%= label %></p>
+              <p class="mt-1 font-display text-xl font-semibold <%= color %> sm:text-2xl"><%= val %></p>
+            </div>
+          <% end %>
+        </div>
+        <div class="px-5">
+          <div class="flex items-end gap-1.5 rounded-2xl bg-gradient-to-b from-plum-50 to-white p-4 ring-1 ring-plum-100" style="height:8.5rem">
+            <% [35, 52, 44, 68, 60, 82, 74, 95, 88, 100, 92, 97].each_with_index do |h, i| %>
+              <span class="flex-1 rounded-t-md bg-gradient-to-t from-saffron-500 to-rani-500 opacity-90 transition-all duration-700 hover:opacity-100" style="height:<%= h %>%"></span>
+            <% end %>
+          </div>
+        </div>
+        <ul class="divide-y divide-slate-100 p-5 pt-3 text-sm">
+          <% [["AK", "Ananya K.", "Bengaluru", "Delivered", "bg-emerald-50 text-emerald-700"], ["RS", "Rohit S.", "Pune", "Out for delivery", "bg-saffron-50 text-saffron-700"], ["PM", "Priya M.", "Gurugram", "Delivered", "bg-emerald-50 text-emerald-700"]].each do |ini, name, city, status, badge| %>
+            <li class="flex items-center gap-3 py-2.5">
+              <span class="grid h-8 w-8 place-items-center rounded-full bg-plum-100 text-[11px] font-bold text-plum-700"><%= ini %></span>
+              <span class="flex-1"><span class="block font-semibold text-slate-800"><%= name %></span><span class="block text-xs text-slate-400"><%= city %></span></span>
+              <span class="rounded-full px-2.5 py-1 text-[11px] font-semibold <%= badge %>"><%= status %></span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+      <div class="absolute -right-3 -top-7 flex items-center gap-3 rounded-2xl bg-plum-900 px-4 py-3 text-white shadow-2xl animate-float-slow sm:-right-8">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-white/10 text-marigold-300"><%= icon("document", class: "h-5 w-5") %></span>
+        <div><p class="text-xs font-semibold">Tax invoice ready</p><p class="text-[11px] text-plum-300">GST · single PDF</p></div>
       </div>
     </div>
   </div>
@@ -331,7 +413,7 @@
 
 <%# ---------------- CTA ---------------- %>
 <section class="px-6 py-24">
-  <div class="spotlight relative mx-auto max-w-6xl overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-saffron-500 via-rani-500 to-plum-700 bg-[length:200%_200%] px-8 py-20 text-center text-white shadow-2xl shadow-rani-500/30 animate-gradient-x sm:px-16" data-controller="spotlight" data-action="mousemove->spotlight#move">
+  <div class="spotlight relative mx-auto max-w-6xl overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-saffron-500 via-rani-500 to-plum-700 px-8 py-20 text-center text-white shadow-2xl shadow-rani-500/30 sm:px-16" data-controller="spotlight" data-action="mousemove->spotlight#move">
     <div class="absolute inset-0 opacity-20 [background-image:radial-gradient(white_1px,transparent_1px)] [background-size:22px_22px]"></div>
     <div class="absolute inset-0 noise"></div>
     <div class="absolute -left-6 top-8 text-7xl opacity-90 animate-float">🎁</div>
@@ -347,3 +429,8 @@
     </div>
   </div>
 </section>
+
+<%# Sticky mobile quote bar %>
+<div class="fixed inset-x-3 bottom-3 z-40 lg:hidden">
+  <%= link_to new_contact_path, class: "btn btn-primary btn-lg w-full shadow-2xl", data: { track: "Mobile sticky: Get a quote" } do %><%= icon("sparkles", class: "h-5 w-5") %> Get a custom quote<% end %>
+</div>
