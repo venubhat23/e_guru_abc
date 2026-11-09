@@ -1,0 +1,55 @@
+<% page_title(@category ? "#{@category.name} — corporate gifts" : "Corporate gift catalogue") %>
+<% meta_description "Browse brandable corporate gifts#{" in #{@category.name}" if @category} — curated, delivered across India. Request a custom quote." %>
+
+<section class="relative mt-[103px] overflow-hidden bg-plum-950 py-20 text-white">
+  <img src="<%= stock_image_url(@category&.slug || "hero-gold", w: 1800) %>" alt="" class="absolute inset-0 h-full w-full object-cover opacity-30">
+  <div class="absolute inset-0 bg-gradient-to-r from-plum-950 via-plum-950/80 to-plum-950/30"></div>
+  <div class="relative mx-auto max-w-7xl px-6">
+    <nav class="text-sm text-plum-200" aria-label="Breadcrumb"><%= link_to "Home", root_path, class: "hover:text-white" %> / <%= link_to "Products", products_path, class: "hover:text-white" %><%= " / #{@category.name}" if @category %></nav>
+    <h1 class="mt-4 font-display text-5xl font-bold sm:text-6xl"><%= @category&.name || "Our gift catalogue" %></h1>
+    <p class="mt-4 max-w-2xl text-lg text-plum-100">Every product can be branded, bundled into a hamper and delivered to each employee. Pricing depends on quantity and customisation — request a quote and we'll reply within one business day.</p>
+    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+      <%= link_to new_contact_path(message: @category ? "Interested in #{@category.name}" : nil), class: "btn btn-lg rounded-full bg-white px-7 text-plum-950 hover:bg-cream-100", data: { track: "Products hero: Request quote" } do %>Request a quote <%= icon("arrow-right", class: "h-4 w-4", stroke: 2.2) %><% end %>
+      <%= link_to catalogue_path, class: "btn btn-lg rounded-full bg-white/10 px-7 text-white ring-1 ring-white/30 hover:bg-white/20", target: "_blank", data: { track: "Products hero: Download catalogue" } do %><%= icon("download", class: "h-5 w-5") %> Download catalogue (PDF)<% end %>
+    </div>
+  </div>
+</section>
+
+<section class="bg-cream-50 py-16">
+  <div class="mx-auto max-w-7xl px-6">
+    <div class="-mx-6 overflow-x-auto px-6 pb-2">
+      <div class="flex w-max gap-2">
+        <%= link_to "All", products_path, class: "rounded-full px-4 py-2 text-sm font-semibold ring-1 #{@category ? "bg-white text-slate-700 ring-slate-200 hover:ring-slate-400" : "bg-plum-950 text-white ring-plum-950"}" %>
+        <% @categories.each do |c| %>
+          <%= link_to products_path(category: c.slug), class: "flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold ring-1 #{@category == c ? "bg-plum-950 text-white ring-plum-950" : "bg-white text-slate-700 ring-slate-200 hover:ring-slate-400"}" do %><span><%= c.emoji %></span><%= c.name %><% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <% if @products.any? %>
+      <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <% @products.each do |product| %>
+          <article class="group flex flex-col overflow-hidden rounded-3xl bg-white ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-plum-950/10">
+            <div class="relative aspect-square overflow-hidden bg-slate-100">
+              <img src="<%= product_image_url(product, w: 640) %>" alt="<%= product.name %>" loading="lazy" class="h-full w-full object-cover transition duration-700 group-hover:scale-110">
+              <% if product.brandable? %><span class="absolute left-3 top-3 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-plum-900 shadow-sm">Brandable</span><% end %>
+            </div>
+            <div class="flex flex-1 flex-col p-5">
+              <p class="text-[11px] font-bold uppercase tracking-widest text-saffron-600"><%= product.category.name %></p>
+              <h2 class="mt-1.5 font-semibold text-slate-900"><%= product.name %></h2>
+              <p class="mt-2 line-clamp-2 flex-1 text-sm text-slate-500"><%= product.description %></p>
+              <%= link_to new_contact_path(message: "Interested in: #{product.name} (#{product.sku})"), class: "btn mt-5 w-full rounded-full bg-plum-950 text-white hover:bg-plum-800", data: { track: "Product card: #{product.name}" } do %>Request quote <%= icon("arrow-right", class: "h-4 w-4", stroke: 2.2) %><% end %>
+            </div>
+          </article>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="mt-10 rounded-3xl bg-white p-12 text-center ring-1 ring-slate-200">
+        <p class="text-4xl"><%= @category&.emoji || "🎁" %></p>
+        <p class="mt-4 font-semibold text-slate-900">New products coming soon in this collection.</p>
+        <p class="mt-1 text-slate-500">Tell us what you need and we'll source it for you.</p>
+        <%= link_to "Request a custom sourcing quote", new_contact_path(message: "Custom sourcing: #{@category&.name}"), class: "btn mt-6 rounded-full bg-plum-950 text-white" %>
+      </div>
+    <% end %>
+  </div>
+</section>

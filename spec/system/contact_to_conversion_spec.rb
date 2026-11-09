@@ -6,7 +6,7 @@ RSpec.describe "Visitor submits Contact Us and admin converts the lead" do
 
   it "works end to end" do
     visit root_path
-    click_link "Book a demo", match: :first
+    click_link "Request quote", match: :first
 
     fill_in "Your name", with: "Kiran Rao"
     fill_in "Work email", with: "kiran@zenith.example"

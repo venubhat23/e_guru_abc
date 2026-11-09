@@ -3,6 +3,8 @@ Rails.application.routes.draw do
   root "pages#home"
   get "how-it-works", to: "pages#how_it_works", as: :how_it_works
   resources :occasions, only: :show, path: "gifts"
+  resources :products, only: :index
+  get "catalogue", to: "catalogues#show", as: :catalogue
   get "contact", to: "contacts#new", as: :new_contact
   post "contact", to: "contacts#create", as: :contact
   get "contact/thanks", to: "contacts#thanks", as: :thanks_contact

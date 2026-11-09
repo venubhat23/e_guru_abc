@@ -25,6 +25,8 @@
         <div>
           <p class="text-sm font-semibold text-white">Company</p>
           <ul class="mt-4 space-y-2.5 text-sm">
+            <li><%= link_to "Products", products_path, class: "hover:text-white" %></li>
+            <li><%= link_to "Download catalogue", catalogue_path, class: "hover:text-white", target: "_blank" %></li>
             <li><%= link_to "How it works", how_it_works_path, class: "hover:text-white" %></li>
             <li><%= link_to "Contact us", new_contact_path, class: "hover:text-white" %></li>
             <li><%= link_to "Become a vendor", vendor_signup_path, class: "hover:text-white" %></li>
