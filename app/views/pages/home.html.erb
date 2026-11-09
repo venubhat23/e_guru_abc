@@ -76,6 +76,30 @@
   </div>
 </section>
 
+<%# =============================== GIFTS BY RECIPIENT (right → left) =============================== %>
+<section class="border-t border-slate-100 bg-slate-50 py-24">
+  <div class="mx-auto max-w-3xl px-6 text-center">
+    <p class="text-xs font-bold uppercase tracking-[.25em] text-saffron-600">Gifts by recipient</p>
+    <h2 class="mt-3 font-display text-4xl font-bold text-plum-950 sm:text-5xl">Gifts for everyone on your list</h2>
+    <p class="mt-4 text-lg text-slate-600">Customised options organised by the people you want to thank.</p>
+  </div>
+  <% recipients = [["For Employees", "hero-hands"], ["For Clients", "chocolates"], ["For Partners", "hero-luxe"], ["For Channel Partners", "diaries"], ["For Sales Teams", "bags"], ["For Leadership", "onboarding"], ["For New Joiners", "tote"], ["For Remote Teams", "coffee"]] %>
+  <div class="relative mt-14 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)]">
+    <div class="flex w-max animate-marquee gap-6 hover:[animation-play-state:paused]" style="animation-duration:50s">
+      <% (recipients * 2).each_with_index do |(label, img), i| %>
+        <%= link_to new_contact_path(message: "Gifting #{label.downcase}"), class: "group w-64 shrink-0 text-center", tabindex: (i >= recipients.size ? -1 : nil), aria: { hidden: (i >= recipients.size ? true : nil) }, data: { track: "Recipient carousel: #{label}" } do %>
+          <div class="relative aspect-square overflow-hidden rounded-3xl bg-slate-200 shadow-lg shadow-plum-950/5">
+            <img src="<%= stock_image_url(img, w: 520, h: 520) %>" alt="Corporate gifts <%= label.downcase %>" loading="lazy" class="h-full w-full object-cover transition duration-700 group-hover:scale-110">
+            <div class="absolute inset-0 bg-plum-950/0 transition duration-500 group-hover:bg-plum-950/30"></div>
+            <span class="absolute bottom-4 left-1/2 -translate-x-1/2 translate-y-3 rounded-full bg-white px-4 py-2 text-xs font-bold text-plum-950 opacity-0 shadow-lg transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">Request quote →</span>
+          </div>
+          <p class="mt-5 inline-block border-b-2 border-plum-950/70 pb-0.5 text-sm font-bold uppercase tracking-widest text-plum-950 transition group-hover:border-saffron-500 group-hover:text-saffron-600"><%= label %></p>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</section>
+
 <%# =============================== SHOP BY CATEGORY (bento) =============================== %>
 <section class="bg-cream-50 py-24" data-controller="reveal">
   <div class="mx-auto max-w-7xl px-6">
@@ -120,6 +144,43 @@
       <% tile.("dry-fruits", "md:col-span-3") %>
     </div>
     <div class="mt-12 text-center"><%= link_to products_path, class: "btn btn-lg rounded-full bg-plum-950 px-8 text-white hover:bg-plum-800", data: { track: "Categories: View all products" } do %>View all products <%= icon("arrow-right", class: "h-4 w-4", stroke: 2.2) %><% end %></div>
+  </div>
+</section>
+
+<%# =============================== WHAT WE DO (right → left) =============================== %>
+<section class="overflow-hidden bg-white py-24">
+  <div class="mx-auto grid max-w-7xl items-center gap-12 px-6 lg:grid-cols-[18rem_1fr]">
+    <div>
+      <p class="text-xs font-bold uppercase tracking-[.25em] text-saffron-600">Our services</p>
+      <h2 class="mt-3 flex items-start gap-2 font-display text-4xl font-bold text-plum-950 sm:text-5xl">What we do <%= icon("arrow-right", class: "mt-3 h-7 w-7 rotate-90 text-saffron-500", stroke: 2.2) %></h2>
+      <p class="mt-4 text-slate-600">End-to-end corporate gifting — from idea and sourcing to branding, delivery and paperwork.</p>
+      <%= link_to how_it_works_path, class: "btn mt-7 rounded-full bg-white px-6 text-plum-950 ring-1 ring-slate-300 hover:ring-plum-950", data: { track: "What we do: How it works" } do %>How it works <%= icon("arrow-right", class: "h-4 w-4", stroke: 2.2) %><% end %>
+    </div>
+    <% services = [
+      ["Solutions", "Curated gifting programmes", "Festive hampers, welcome kits and awards — designed around your budget and culture.", "hero-luxe"],
+      ["Engagement", "Rewards & recognition", "Milestones, anniversaries and spot awards that keep teams motivated all year.", "rewards"],
+      ["Relations", "Client & partner gifting", "Premium gifts that strengthen the relationships behind your business.", "clients"],
+      ["Branding", "Your logo, everywhere", "Printing, engraving and personalised cards with every recipient's name.", "hero-gold"],
+      ["Logistics", "Pan-India delivery", "Home, office or self-fill addresses — tracked per recipient across 19,000+ pincodes.", "team"],
+      ["Compliance", "GST-ready paperwork", "Proforma, tax invoice and delivery reports in one consolidated bundle.", "events"]
+    ] %>
+    <div class="relative -mr-6 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_4%,black_92%,transparent)] lg:mr-0">
+      <div class="flex w-max animate-marquee gap-6 py-4 hover:[animation-play-state:paused]" style="animation-duration:55s">
+        <% (services * 2).each_with_index do |(tag, title, body, img), i| %>
+          <article class="group w-80 shrink-0 rounded-3xl bg-white p-3 shadow-lg shadow-plum-950/5 ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1.5 hover:shadow-2xl" aria-hidden="<%= i >= services.size %>">
+            <div class="relative h-48 overflow-hidden rounded-2xl">
+              <img src="<%= stock_image_url(img, w: 640, h: 400) %>" alt="" loading="lazy" class="h-full w-full object-cover transition duration-700 group-hover:scale-110">
+              <div class="absolute inset-0 bg-gradient-to-t from-plum-950/60 to-transparent"></div>
+              <span class="absolute left-3 top-3 rounded-full bg-white/20 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-white ring-1 ring-white/40 backdrop-blur">0<%= (i % services.size) + 1 %> · <%= tag %></span>
+            </div>
+            <div class="px-3 pb-3 pt-5">
+              <h3 class="font-display text-xl font-bold text-plum-950"><%= title %></h3>
+              <p class="mt-2 text-sm leading-relaxed text-slate-600"><%= body %></p>
+            </div>
+          </article>
+        <% end %>
+      </div>
+    </div>
   </div>
 </section>
 

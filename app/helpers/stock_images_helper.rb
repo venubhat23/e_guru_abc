@@ -14,7 +14,7 @@ module StockImagesHelper
     "birthday" => "1530103862676-de8c9debad1d", "onboarding" => "1497032628192-86f99bcd76bc",
     "festival" => "1513885535751-8b9238bd345a", "rewards" => "1600880292203-757bb62b4baf",
     "clients" => "1521791136064-7986c2920216", "team" => "1522071820081-009f0129c71c",
-    "events" => "1556761175-5973dc0f32e7", "milestones" => "1606800052052-a08af7148866",
+    "events" => "1556761175-5973dc0f32e7", "milestones" => "1607344645866-009c320b63e0",
     # hero / mood
     "hero-luxe" => "1608755728617-aefab37d2edd", "hero-gold" => "1607344645866-009c320b63e0",
     "hero-pink" => "1549465220-1a8b9238cd48", "hero-hands" => "1512909006721-3d6018887383",

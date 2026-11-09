@@ -138,7 +138,7 @@
   .glass { @apply bg-white/70 backdrop-blur-xl; }
 
   /* Progressive enhancement: content is visible by default; JS hides only below-the-fold items until scrolled to. */
-  .reveal-pending { opacity: 0; translate: 0 24px; }
+  .reveal-pending { opacity: 0; translate: 64px 0; }
   .reveal-animate { transition: opacity .8s cubic-bezier(.2,.7,.2,1), translate .8s cubic-bezier(.2,.7,.2,1); }
 
   .prose-legal { @apply text-slate-700 leading-relaxed; }
