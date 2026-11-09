@@ -78,7 +78,7 @@ gem "chartkick"
 gem "dotenv-rails", groups: [ :development, :test ]
 
 group :development, :test do
-  gem "rspec-rails", "~> 7.1"
+  gem "rspec-rails", "~> 8.1"
   gem "factory_bot_rails"
   gem "faker"
   gem "bullet"
