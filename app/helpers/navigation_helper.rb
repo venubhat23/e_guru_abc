@@ -12,7 +12,11 @@ module NavigationHelper
       ] },
       { title: "Supply", items: [
         { label: "Vendors", icon: "briefcase", path: admin_vendors_path, badge: counts[:vendors_pending] },
-        { label: "Catalogue", icon: "cube", path: admin_catalogue_path, match: %r{\A/admin/(catalogue|categories|products|packages|price-preview)}, badge: counts[:products_pending] },
+        { label: "Catalogue", icon: "sparkles", path: admin_catalogue_path, match: %r{\A/admin/catalogue} },
+        { label: "Categories", icon: "tag", path: admin_categories_path },
+        { label: "Products", icon: "cube", path: admin_products_path, badge: counts[:products_pending] },
+        { label: "Packages", icon: "gift", path: admin_packages_path },
+        { label: "Price preview", icon: "rupee", path: admin_price_preview_path },
         { label: "Offers matrix", icon: "grid", path: admin_offers_matrix_path }
       ] },
       { title: "Operations", items: [
